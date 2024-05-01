@@ -35,8 +35,9 @@ Route::apiResource('vehicle', App\Http\Controllers\api\VehicleController::class)
 
 //registration
 Route::apiResource('registration', App\Http\Controllers\api\RegistrationController::class);
-Route::post('/registrationUpdate/{id}',[App\Http\Controllers\api\StudentController::class,'update']);
+Route::post('/registrationUpdate/{id}',[App\Http\Controllers\api\RegistrationController::class,'update']);
 Route::post('/updateReguest/{id}',[App\Http\Controllers\api\RegistrationController::class,'updateReguest']);
+Route::get('/approved',[App\Http\Controllers\api\RegistrationController::class,'approved']);
   
 
 /////////////////////////////////////////////
@@ -49,13 +50,25 @@ Route::get('/notAssign',[App\Http\Controllers\api\VehicleController::class,'notA
 
 // student
 Route::get('/studentGet/{id}',[App\Http\Controllers\api\StudentController::class,'studentGet']);
+Route::get('/studentShow/{id}',[App\Http\Controllers\api\StudentController::class,'show']);
 Route::delete('/destroyStudent/{id}',[App\Http\Controllers\api\StudentController::class,'destroy']);
+Route::post('/studentadd',[App\Http\Controllers\api\StudentController::class,'store']);
+Route::post('/studentUpdated/{id}',[App\Http\Controllers\api\StudentController::class,'update']);
+
 
 ///Driver
 Route::apiResource('drivers', App\Http\Controllers\api\DriverController::class);
 Route::post('/driversUpdate/{id}',[App\Http\Controllers\api\DriverController::class,'update']);
-
 Route::post('/driverLogin',[App\Http\Controllers\api\DriverController::class,'driverLogin']);
+
+////  DriverAttendance
+Route::apiResource('DriverAttendance', App\Http\Controllers\api\AttendanceController::class);
+
+/// CareTakerAttendance
+Route::post('/careTakerAttenStore',[App\Http\Controllers\api\AttendanceController::class,'careTakerAttenStore']);
+Route::get('/careTakerAttenShow/{id}',[App\Http\Controllers\api\AttendanceController::class,'careTakerAttenShow']);
+Route::get('/careTakerAttendance',[App\Http\Controllers\api\AttendanceController::class,'careTakerAttendance']);
+
 
 
 

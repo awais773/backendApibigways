@@ -33,6 +33,21 @@ class RegistrationController extends Controller
         ]);
     }
 
+    public function approved()
+    {
+        $data = User::where('type', 'parents')->where('status', 'Approved')->with('vehicle:id,name,vehicle_type')->latest()->get();
+        // foreach ($data as $Driver) {
+        //     $Driver->image = json_decode($Driver->image); // Decode the JSON-encoded location string
+        // }
+        if (is_null($data)) {
+            return response()->json('data not found',);
+        }
+        return response()->json([
+            'success' => true,
+            'message' => 'All Data susccessfull',
+            'data' => $data,
+        ]);
+    }
 
     public function reguestedDataGet()
     {

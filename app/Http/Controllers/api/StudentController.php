@@ -107,7 +107,7 @@ class StudentController extends Controller
 
             ], 400);
         } {
-            $user = Auth::user();
+            // $user = Auth::user();
             $Student = Student::create($request->post());
             if ($file = $request->file('image')) {
                 $video_name = md5(rand(1000, 10000));
@@ -118,7 +118,7 @@ class StudentController extends Controller
                 $file->move($upload_path, $video_url);
                 $Student->image = $video_url;
             }
-            $Student->parent_id = $user->id;
+            // $Student->parent_id = $user->id;
             $Student->save();
             return response()->json([
                 'success' => true,
