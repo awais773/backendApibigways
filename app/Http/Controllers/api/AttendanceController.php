@@ -7,6 +7,7 @@ use App\Models\Student;
 use App\Models\Vehicle;
 use Illuminate\Http\Request;
 use App\Models\DriverAttendance;
+use App\Models\StudentAttendance;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\CareTakerAttendance;
@@ -159,6 +160,69 @@ class AttendanceController extends Controller
                 'success' => true,
                 'message' => 'Driver Create successfull',
                 'date' => $Driver,
+            ], 200);
+        }
+    }
+
+    public function studentAttendance()
+    {
+        $data = StudentAttendance::with('student:id,student_name')->select(
+            'student_id' ,
+            DB::raw('SUM(CASE WHEN attendance = "Present" THEN 1 ELSE 0 END) as total_present'),
+            DB::raw('SUM(CASE WHEN attendance = "Absent" THEN 1 ELSE 0 END) as total_absent'),
+        )
+            ->groupBy('student_id')
+            ->get();
+
+        if ($data->isEmpty()) {
+            return response()->json('data not found');
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data retrieved successfully',
+            'data' => $data,
+        ]);
+    }
+
+    public function studentAttenShow($id)
+    {
+        $data = StudentAttendance::with('student:id,student_name','vehicle:id,name,vehicle_number')
+        ->where('student_id',$id)
+        ->get();
+        $data->transform(function ($item) {
+            $item->date = date('Y-m-d', strtotime($item->created_at)); // Extract date
+            $item->time = date('H:i:s', strtotime($item->created_at)); // Extract time
+            unset($item->created_at); // Remove the original created_at field
+            return $item;
+        });
+        return response()->json([
+            'success' => true,
+            'message' => 'All Data successful',
+            'data' => $data,
+        ]);
+    }
+
+    public function studentAttenStore(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            // 'reg_no' => 'required|unique:vehicles',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                // 'message' => $validator->errors()->toJson()
+                'message' => 'Registration Number already exist',
+
+            ], 400);
+        } {
+            $Student = studentAttendance::create($request->post());
+            $Student->save();
+            return response()->json([
+                'success' => true,
+                'message' => 'Student Attendance Create successfull',
+                'date' => $Student,
             ], 200);
         }
     }
