@@ -38,7 +38,7 @@ Route::apiResource('registration', App\Http\Controllers\api\RegistrationControll
 Route::post('/registrationUpdate/{id}',[App\Http\Controllers\api\RegistrationController::class,'update']);
 Route::post('/updateReguest/{id}',[App\Http\Controllers\api\RegistrationController::class,'updateReguest']);
 Route::get('/approved',[App\Http\Controllers\api\RegistrationController::class,'approved']);
-  
+
 
 /////////////////////////////////////////////
 
@@ -70,6 +70,10 @@ Route::post('/careTakerAttenStore',[App\Http\Controllers\api\AttendanceControlle
 Route::get('/careTakerAttenShow/{id}',[App\Http\Controllers\api\AttendanceController::class,'careTakerAttenShow']);
 Route::get('/careTakerAttendance',[App\Http\Controllers\api\AttendanceController::class,'careTakerAttendance']);
 
+////  StudentAttendance
+Route::post('/studentAttenStore',[App\Http\Controllers\api\AttendanceController::class,'studentAttenStore']);
+Route::get('/studentAttenShow/{id}',[App\Http\Controllers\api\AttendanceController::class,'studentAttenShow']);
+Route::get('/studentAttendance',[App\Http\Controllers\api\AttendanceController::class,'studentAttendance']);
 
 
 
