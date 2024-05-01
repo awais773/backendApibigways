@@ -57,8 +57,8 @@ class AttendanceController extends Controller
             'data' => $data,
         ]);
     }
-    
-    
+
+
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [

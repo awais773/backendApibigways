@@ -31,18 +31,18 @@ class CareTakerController extends Controller
     public function show($id)
     {
         $data = CareTaker::with('vehicle')->where('id',$id)->first();
-    
+
         // foreach ($data as $CareTaker) {
         //     $CareTaker->image = json_decode($CareTaker->image); // Decode the JSON-encoded location string
         // }
-    
+
         return response()->json([
             'success' => true,
             'message' => 'All Data successful',
             'data' => $data,
         ]);
     }
-    
+
     public function notAssign()
     {
         $data = Vehicle::with('CareTaker:id,vehicle_id,name,last_name','company' )
@@ -63,7 +63,7 @@ class CareTakerController extends Controller
     }
 
 
-    
+
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -112,7 +112,7 @@ class CareTakerController extends Controller
                 'message' => 'Registration Number already exist',
 
             ], 400);
-        } 
+        }
         $obj = CareTaker::find($id);
         if ($obj) {
             if (!empty($request->input('name'))) {
