@@ -42,6 +42,7 @@ Route::get('/approved',[App\Http\Controllers\api\RegistrationController::class,'
 
 /////////////////////////////////////////////
 
+
 //vehicle
 Route::post('/vehicleUpdate/{id}',[App\Http\Controllers\api\VehicleController::class,'update']);
 Route::get('/vehicleIndex/{type}',[App\Http\Controllers\api\VehicleController::class,'vehicleIndex']);
