@@ -60,18 +60,18 @@ class StudentController extends Controller
     public function show($id)
     {
         $data = Student::find($id);
-    
+
         // foreach ($data as $Driver) {
         //     $Driver->image = json_decode($Driver->image); // Decode the JSON-encoded location string
         // }
-    
+
         return response()->json([
             'success' => true,
             'message' => 'All Data successful',
             'data' => $data,
         ]);
     }
-    
+
     public function notAssign()
     {
         $data = Vehicle::with('driver:id,vehicle_id,name,last_name','company' )
@@ -92,7 +92,7 @@ class StudentController extends Controller
     }
 
 
-    
+
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -142,7 +142,7 @@ class StudentController extends Controller
                 'message' => 'Registration Number already exist',
 
             ], 400);
-        } 
+        }
         $obj = Student::find($id);
         if ($obj) {
             if (!empty($request->input('student_name'))) {
@@ -163,7 +163,7 @@ class StudentController extends Controller
             if (!empty($request->input('parent_id'))) {
                 $obj->parent_id = $request->input('parent_id');
             }
-           
+
             if ($file = $request->file('image')) {
                 $video_name = md5(rand(1000, 10000));
                 $ext = strtolower($file->getClientOriginalExtension());
@@ -188,7 +188,7 @@ class StudentController extends Controller
         if (!empty($program)) {
             $program->delete();
             return response()->json([
-                'success' => 'True',
+                'success' => true,
                 'message' => ' delete successfuly',
             ], 200);
         } else {

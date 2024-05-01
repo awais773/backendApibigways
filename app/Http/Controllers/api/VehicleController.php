@@ -49,18 +49,18 @@ class VehicleController extends Controller
     public function show($id)
     {
         $data = Vehicle::find($id);
-    
+
         // foreach ($data as $Driver) {
         //     $Driver->image = json_decode($Driver->image); // Decode the JSON-encoded location string
         // }
-    
+
         return response()->json([
             'success' => true,
             'message' => 'All Data successful',
             'data' => $data,
         ]);
     }
-    
+
     public function notAssign()
     {
         $data = Vehicle::with('driver:id,vehicle_id,name,email', )
@@ -81,7 +81,7 @@ class VehicleController extends Controller
     }
 
 
-    
+
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -131,7 +131,7 @@ class VehicleController extends Controller
                 'message' => 'Registration Number already exist',
 
             ], 400);
-        } 
+        }
         $obj = Vehicle::find($id);
         if ($obj) {
             if (!empty($request->input('name'))) {
@@ -193,7 +193,7 @@ class VehicleController extends Controller
         if (!empty($program)) {
             $program->delete();
             return response()->json([
-                'success' => 'True',
+                'success' => true,
                 'message' => ' delete successfuly',
             ], 200);
         } else {

@@ -82,10 +82,10 @@ class AuthenticateController extends Controller
             if (!empty($request->input('country'))) {
                 $obj->country = $request->input('country');
             }
-            
+
             if ($obj->save()) {
                 $this->data = $obj;
-                $this->success = True;
+                $this->success = true;
                 $this->message = 'Profile is updated successfully';
             }
         }
@@ -98,12 +98,12 @@ class AuthenticateController extends Controller
         $data = User::latest()->get();
         if (is_null($data)) {
             return response()->json([
-                'success' => 'Falls',
+                'success' => false,
                 'message' => 'data not found'
             ],);
         }
         return response()->json([
-            'success' => 'True',
+            'success' => true,
             'message' => 'All Data susccessfull',
             'data' => $data,
         ]);
@@ -115,17 +115,17 @@ class AuthenticateController extends Controller
         $program = User::find($id);
         if (is_null($program)) {
             return response()->json([
-                'success' => 'Falls',
+                'success' => false,
                 'message' => 'data not found'
             ], 404);
         }
         return response()->json([
-            'success' => 'True',
+            'success' => true,
             'data' => $program,
         ]);
     }
 
-   
+
 
         public function updatePassword(Request $request) {
             $this->validate($request, [
@@ -141,39 +141,39 @@ class AuthenticateController extends Controller
                 // $user['token'] = '';
                 $user['password'] = Hash::make($request->password);
                 $user->save();
-                return response()->json(['success' => True, 'message' => 'Success! password has been changed',]);
+                return response()->json(['success' => true, 'message' => 'Success! password has been changed',]);
             }
             return response()->json(['success' => false, 'message' => 'Failed! something went wrong',]);
         }
 
 
-        
+
    public function otpVerification(Request $request)
    {
        $otp = $request->input('otp');
        $email = $request->input('email');
-       
+
        $this->success = false;
        $this->message = 'Please enter a valid OTP number';
        $this->data = [];
-       
+
        // Check if OTP and email are provided
        if (!empty($otp) && !empty($email)) {
            // Find the user by matching 'otp_number' and 'email'
            $user = User::where('otp_number', $otp)->where('email', $email)->first();
-           
+
            if ($user) {
                $user->otp_verify = 1;
-               $user->save();                
-               $token = $user->createToken('assessment')->accessToken;                
+               $user->save();
+               $token = $user->createToken('assessment')->accessToken;
                $userData = $user->toArray();
                $this->data['token'] = 'Bearer ' . $token;
-               $this->data['user'] = $userData;                
+               $this->data['user'] = $userData;
                $this->success = true;
                $this->message = 'Verification successful';
            }
        }
-       
+
        return response()->json([
            'success' => $this->success,
            'message' => $this->message,
@@ -181,27 +181,27 @@ class AuthenticateController extends Controller
        ]);
    }
 
-   
-   
+
+
      public function PasswordChanged(Request $request)
    {
        $this->validate($request, [
            'old_password' => 'required',
        ]);
-   
+
        $user = Auth::user();
        if ($user) {
            // Check if the old password is correct
            if (Hash::check($request->old_password, $user->password)) {
                $user['password'] = Hash::make($request->password);
                $user->save();
-   
+
                return response()->json(['success' => true, 'message' => 'Success! Password has been changed']);
            } else {
                return response()->json(['success' => false, 'message' => 'Failed! Old password is incorrect']);
            }
        }
-   
+
        return response()->json(['success' => false, 'message' => 'Failed! Something went wrong']);
    }
 
@@ -209,7 +209,7 @@ class AuthenticateController extends Controller
 
    public function resendEmail(Request $request)
    {
-       $userId = $request->input('id');                
+       $userId = $request->input('id');
        $user = User::find($userId);
        if (!$user) {
            return response()->json([
@@ -239,7 +239,7 @@ class AuthenticateController extends Controller
            $token = $checkEmail->createToken('assessment')->accessToken;
            $this->$checkEmail['token'] = 'Bearer ' . $token;
            return response()->json([
-               'success' => 'true', 'message' => 'Otp sent successfully. Please check your email!',
+               'success' => true , 'message' => 'Otp sent successfully. Please check your email!',
                'data' => $data = ([
                    'token' => $token
                ])
@@ -248,8 +248,8 @@ class AuthenticateController extends Controller
            return response()->json(['success' => false, 'message' => 'this email is not exits']);
        }
    }
-   
 
 
-    
+
+
 }

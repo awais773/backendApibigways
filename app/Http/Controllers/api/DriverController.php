@@ -45,9 +45,9 @@ class DriverController extends Controller
     //               'user'=> Driver::find(Auth::id()),
     //               'token'=>$token,
     //             ])
-              
+
     //              ],200);
-    //       } 
+    //       }
     //       else{
     //         return response()->json([
     //             'success'=>false,
@@ -60,19 +60,19 @@ class DriverController extends Controller
     public function show($id)
     {
         $data = Driver::with('vehicle')->where('id',$id)->first();
-    
+
         // foreach ($data as $Driver) {
         //     $Driver->image = json_decode($Driver->image); // Decode the JSON-encoded location string
         // }
-    
+
         return response()->json([
             'success' => true,
             'message' => 'All Data successful',
             'data' => $data,
         ]);
     }
-    
-    
+
+
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -121,7 +121,7 @@ class DriverController extends Controller
                 'message' => 'Registration Number already exist',
 
             ], 400);
-        } 
+        }
         $obj = Driver::find($id);
         if ($obj) {
             if (!empty($request->input('name'))) {

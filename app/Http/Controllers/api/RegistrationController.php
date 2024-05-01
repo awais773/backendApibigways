@@ -221,7 +221,7 @@ class RegistrationController extends Controller
             if (!empty($request->input('drop_longitude'))) {
                 $obj->drop_longitude = $request->input('drop_longitude');
             }
-            
+
             if (!empty($request->input('vehicle_id'))) {
                 $obj->vehicle_id = $request->input('vehicle_id');
             }

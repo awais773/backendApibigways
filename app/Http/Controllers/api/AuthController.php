@@ -27,13 +27,13 @@ class AuthController extends Controller
                 'success'=>false,
                 // 'message' => $validator->errors()->toJson()
                  'message'=> 'Email already exist',
-    
+
             ], 400);
     }
         $user = User::create([
             'name'=> $request->name,
             'email'=> $request->email,
-            'password'=> Hash::make($request->password)         
+            'password'=> Hash::make($request->password)
         ]);
        $token = $user->createToken('Token')->accessToken;
        if (!$user) {
@@ -45,7 +45,7 @@ class AuthController extends Controller
         'token'=>$token,
         'user'=>$user
       ])
-    
+
     ], 200);
   }
 
@@ -66,9 +66,9 @@ class AuthController extends Controller
                   'user'=> User::find(Auth::id()),
                   'token'=>$token,
                 ])
-              
+
                  ],200);
-          } 
+          }
           else{
             return response()->json([
                 'success'=>false,
@@ -76,7 +76,7 @@ class AuthController extends Controller
           }
     }
 
-    
+
     public function tokenGet(Request $request)
     {
         $data=[
@@ -94,9 +94,9 @@ class AuthController extends Controller
                   // 'user'=> User::find(Auth::id()),
                   'token'=>$token,
                 ])
-              
+
                  ],200);
-          } 
+          }
           else{
             return response()->json([
                 'success'=>false,
@@ -106,8 +106,8 @@ class AuthController extends Controller
 
     public function userinfo()
     {
-        $user = auth()->user(); 
-        return response()->json(['user'=>$user],200);      
+        $user = auth()->user();
+        return response()->json(['user'=>$user],200);
 
     }
 }
