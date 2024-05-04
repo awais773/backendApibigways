@@ -10,6 +10,7 @@ use App\Models\Student;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Laravel\Passport\Token;
 
 class DriverController extends Controller
 {
@@ -204,6 +205,44 @@ class DriverController extends Controller
                 'success' => false,
                 'message' => 'something wrong try again ',
             ]);
+        }
+    }
+    public function driverLogin(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->all()]);
+        }
+
+        $driver = Driver::where('email', $request->email)->first();
+
+        if (!$driver) {
+            return response()->json(['error' => 'Email not found'], 400);
+        }
+
+        // Check if the provided password matches the hashed password
+        if ($request->password === $driver->password) {
+            Auth::guard('driver')->login($driver);
+            $token = $driver->createToken('Token')->accessToken;
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Login successful',
+                'data' => [
+                    'user' => $driver,
+                    'token' => $token,
+                ]
+            ], 200);
+        } else {
+            // If authentication fails, return an error response
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid credentials',
+            ], 401);
         }
     }
 }

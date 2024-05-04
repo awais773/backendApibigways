@@ -44,6 +44,26 @@ return [
             'driver' => 'passport',
             'provider' => 'users',
         ],
+        //  FOR Driver
+        'driver' => [
+            'driver' => 'session',
+            'provider' => 'drivers',
+        ],
+
+        'driver-api' => [
+            'driver' => 'passport',
+            'provider' => 'drivers',
+        ],
+         //  FOR CareTaker
+         'caretaker' => [
+            'driver' => 'session',
+            'provider' => 'caretakers',
+        ],
+
+        'caretaker-api' => [
+            'driver' => 'passport',
+            'provider' => 'caretakers',
+        ],
     ],
 
     /*
@@ -73,6 +93,17 @@ return [
         //     'driver' => 'database',
         //     'table' => 'users',
         // ],
+
+         // ADD DRIVER PROVIDER
+         'drivers' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Driver::class,
+        ],
+         // ADD CARETAKER PROVIDER
+         'caretakers' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\CareTaker::class,
+        ],
     ],
 
     /*

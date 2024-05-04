@@ -18,6 +18,6 @@ class StudentAttendance extends Model
     }
     public function vehicle()
     {
-        return $this->hasOne(vehicle::class, 'id', 'vehicle_id');
+        return $this->hasOne(Vehicle::class, 'id', 'vehicle_id');
     }
 }
