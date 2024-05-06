@@ -32,6 +32,7 @@ Route::post('/resendEmail',[App\Http\Controllers\api\AuthenticateController::cla
 Route::get('/UserGet',[App\Http\Controllers\api\AuthenticateController::class,'index']);
 Route::get('/UserGet/{id}',[App\Http\Controllers\api\AuthenticateController::class,'show']);
 Route::apiResource('vehicle', App\Http\Controllers\api\VehicleController::class);
+Route::get('/realtime-location', [App\Http\Controllers\api\VehicleController::class, 'getRealtimeLocation']);
 
 //registration
 Route::apiResource('registration', App\Http\Controllers\api\RegistrationController::class);
