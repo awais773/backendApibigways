@@ -44,9 +44,24 @@ class AttendanceController extends Controller
         ]);
     }
 
-    public function show($id)
+    public function show(Request $request , $id)
     {
-        $data = DriverAttendance::with('driver:id,name')->where('driver_id',$id)->get();
+        $selectedDate = $request->input('selected_date');
+        $endedDate = $request->input('ended_date');
+        // If no date is selected, default to the current week
+        if (!$selectedDate || !$endedDate) {
+            $startDate = now()->startOfWeek(); // Start of current week
+            $endDate = now()->endOfWeek(); // End of current week
+        } else {
+            $selectedDate = Carbon::parse($selectedDate);
+            $endedDate = Carbon::parse($endedDate);
+            $startDate = $selectedDate->copy()->startOfMonth();
+            $endDate = $endedDate->copy()->endOfMonth();
+        }
+
+        $data = DriverAttendance::with('driver:id,name')->where('driver_id',$id)
+        ->whereBetween('created_at', [$startDate, $endDate])->latest()
+        ->get();
         $data->transform(function ($item) {
             $item->date = date('Y-m-d', strtotime($item->created_at)); // Extract date
             $item->time = date('H:i:s', strtotime($item->created_at)); // Extract time
@@ -125,9 +140,23 @@ class AttendanceController extends Controller
         ]);
     }
 
-    public function careTakerAttenShow($id)
+    public function careTakerAttenShow(Request $request, $id)
     {
-        $data = CareTakerAttendance::with('careTaker:id,name')->where('careTaker_id',$id)->get();
+        $selectedDate = $request->input('selected_date');
+        $endedDate = $request->input('ended_date');
+        // If no date is selected, default to the current week
+        if (!$selectedDate || !$endedDate) {
+            $startDate = now()->startOfWeek(); // Start of current week
+            $endDate = now()->endOfWeek(); // End of current week
+        } else {
+            $selectedDate = Carbon::parse($selectedDate);
+            $endedDate = Carbon::parse($endedDate);
+            $startDate = $selectedDate->copy()->startOfMonth();
+            $endDate = $endedDate->copy()->endOfMonth();
+        }
+        $data = CareTakerAttendance::with('careTaker:id,name')->where('careTaker_id',$id)
+        ->whereBetween('created_at', [$startDate, $endDate])->latest()
+        ->get();
         $data->transform(function ($item) {
             $item->date = date('Y-m-d', strtotime($item->created_at)); // Extract date
             $item->time = date('H:i:s', strtotime($item->created_at)); // Extract time
@@ -203,7 +232,7 @@ class AttendanceController extends Controller
 
         $data = StudentAttendance::with('student:id,student_name','vehicle:id,name,vehicle_number')
         ->where('student_id',$id)
-        ->whereBetween('created_at', [$startDate, $endDate])
+        ->whereBetween('created_at', [$startDate, $endDate])->latest()
         ->get();
         $data->transform(function ($item) {
             $item->date = date('Y-m-d', strtotime($item->created_at)); // Extract date
