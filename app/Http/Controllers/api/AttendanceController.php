@@ -46,7 +46,7 @@ class AttendanceController extends Controller
 
     public function show($id)
     {
-        $data = DriverAttendance::with('driver:id,name')->where('driver_id',$id)->get();
+        $data = DriverAttendance::with('driver:id,name')->where('driver_id',$id)->latest()->get();
         $data->transform(function ($item) {
             $item->date = date('Y-m-d', strtotime($item->created_at)); // Extract date
             $item->time = date('H:i:s', strtotime($item->created_at)); // Extract time
@@ -127,7 +127,7 @@ class AttendanceController extends Controller
 
     public function careTakerAttenShow($id)
     {
-        $data = CareTakerAttendance::with('careTaker:id,name')->where('careTaker_id',$id)->get();
+        $data = CareTakerAttendance::with('careTaker:id,name')->where('careTaker_id',$id)->latest()->get();
         $data->transform(function ($item) {
             $item->date = date('Y-m-d', strtotime($item->created_at)); // Extract date
             $item->time = date('H:i:s', strtotime($item->created_at)); // Extract time
@@ -203,7 +203,7 @@ class AttendanceController extends Controller
 
         $data = StudentAttendance::with('student:id,student_name','vehicle:id,name,vehicle_number')
         ->where('student_id',$id)
-        ->whereBetween('created_at', [$startDate, $endDate])
+        ->whereBetween('created_at', [$startDate, $endDate])->latest()
         ->get();
         $data->transform(function ($item) {
             $item->date = date('Y-m-d', strtotime($item->created_at)); // Extract date
