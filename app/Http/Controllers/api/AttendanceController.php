@@ -11,6 +11,7 @@ use App\Models\StudentAttendance;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\CareTakerAttendance;
+use Carbon\Carbon;
 
 use function Laravel\Prompts\select;
 use Illuminate\Support\Facades\Auth;
@@ -184,11 +185,25 @@ class AttendanceController extends Controller
             'data' => $data,
         ]);
     }
-
-    public function studentAttenShow($id)
+    public function studentAttenShow(Request $request, $id)
     {
+        $selectedDate = $request->input('selected_date');
+        $endedDate = $request->input('ended_date');
+
+        // If no date is selected, default to the current week
+        if (!$selectedDate || !$endedDate) {
+            $startDate = now()->startOfWeek(); // Start of current week
+            $endDate = now()->endOfWeek(); // End of current week
+        } else {
+            $selectedDate = Carbon::parse($selectedDate);
+            $endedDate = Carbon::parse($endedDate);
+            $startDate = $selectedDate->copy()->startOfMonth();
+            $endDate = $endedDate->copy()->endOfMonth();
+        }
+
         $data = StudentAttendance::with('student:id,student_name','vehicle:id,name,vehicle_number')
         ->where('student_id',$id)
+        ->whereBetween('created_at', [$startDate, $endDate])
         ->get();
         $data->transform(function ($item) {
             $item->date = date('Y-m-d', strtotime($item->created_at)); // Extract date
@@ -198,7 +213,7 @@ class AttendanceController extends Controller
         });
         return response()->json([
             'success' => true,
-            'message' => 'All Data successful',
+            'message' => 'Attendance data retrieved successfully',
             'data' => $data,
         ]);
     }

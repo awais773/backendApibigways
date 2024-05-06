@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use App\Models\User;
 
 class VehicleController extends Controller
 {
@@ -202,5 +203,36 @@ class VehicleController extends Controller
                 'message' => 'something wrong try again ',
             ]);
         }
+    }
+    public function getRealtimeLocation(Request $request)
+    {
+        // Fetch the vehicle details by ID
+        // $vehicle = Vehicle::find($request->input('vehicle_number'));
+        $vehicle = User::where('vehicle_id', $request->input('vehicle_id'))->first();
+
+
+        // Get the pickup and drop locations from the vehicle details
+        $origin = $vehicle->pickup_location;
+        $destination = $vehicle->drop_location;
+
+        // Google Maps API Key
+        $apiKey = config('services.google_maps.api_key');
+
+        // Initialize Guzzle client
+        $client = new \GuzzleHttp\Client();
+
+        // Make request to Google Directions API
+        $response = $client->get("https://maps.googleapis.com/maps/api/directions/json", [
+            'query' => [
+                'key' => $apiKey,
+                'origin' => 'lahore',
+                'destination' => 'multan',
+            ]
+        ]);
+
+        // Decode the response JSON
+        $data = json_decode($response->getBody(), true);
+        // Return the response
+        return response()->json($data);
     }
 }
