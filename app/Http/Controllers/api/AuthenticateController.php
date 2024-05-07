@@ -60,13 +60,13 @@ class AuthenticateController extends Controller
         $obj = User::find($id);
         if ($obj) {
 
-            // if ($image = $request->file('image')) {
-            //     $destinationPath = 'profileImage/';
-            //     $profileImage = date('YmdHis') . "." . $image->getClientOriginalExtension();
-            //     $image->move($destinationPath, $profileImage);
-            //     $input['image'] = "$profileImage";
-            //     $obj->avatar = $profileImage;
-            // }
+            if ($image = $request->file('image')) {
+                $destinationPath = 'profileImage/';
+                $profileImage = date('YmdHis') . "." . $image->getClientOriginalExtension();
+                $image->move($destinationPath, $profileImage);
+                $input['image'] = "$profileImage";
+                $obj->image = $profileImage;
+            }
             if (!empty($request->input('name'))) {
                 $obj->name = $request->input('name');
             }
