@@ -56,40 +56,36 @@ Route::get('/studentShow/{id}',[App\Http\Controllers\api\StudentController::clas
 Route::delete('/destroyStudent/{id}',[App\Http\Controllers\api\StudentController::class,'destroy']);
 Route::post('/studentadd',[App\Http\Controllers\api\StudentController::class,'store']);
 Route::post('/studentUpdated/{id}',[App\Http\Controllers\api\StudentController::class,'update']);
-
-
-///Driver
-Route::apiResource('drivers', App\Http\Controllers\api\DriverController::class);
-Route::post('/driversUpdate/{id}',[App\Http\Controllers\api\DriverController::class,'update']);
-
-// Route::apiResource('DriverAttendance', App\Http\Controllers\api\AttendanceController::class);
-
-
-Route::post('driver/login',[App\Http\Controllers\api\DriverController::class, 'driverLogin'])->name('driver.login');
-Route::get('/DriverAttendance/{id}',[App\Http\Controllers\api\AttendanceController::class,'Show']);
-Route::get('/DriverAttendance',[App\Http\Controllers\api\AttendanceController::class,'index']);
-Route::group( ['prefix' => 'driver','middleware' => ['auth:driver-api'] ],function(){
-    ////  DriverAttendance
-    Route::post('DriverAttendance', App\Http\Controllers\api\AttendanceController::class, 'store');
-});
-
-Route::post('caretaker/login',[App\Http\Controllers\api\CareTakerController::class, 'caretakerLogin'])->name('caretaker.login');
-Route::get('/careTakerAttenShow/{id}',[App\Http\Controllers\api\AttendanceController::class,'careTakerAttenShow']);
-Route::get('/careTakerAttendance',[App\Http\Controllers\api\AttendanceController::class,'careTakerAttendance']);
-Route::group( ['prefix' => 'caretaker','middleware' => ['auth:caretaker-api'] ],function(){
-/// CareTakerAttendance
-Route::post('/careTakerAttenStore',[App\Http\Controllers\api\AttendanceController::class,'careTakerAttenStore']);
-});
 ////  StudentAttendance
 Route::post('/studentAttenStore',[App\Http\Controllers\api\AttendanceController::class,'studentAttenStore']);
 Route::get('/studentAttenShow/{id}',[App\Http\Controllers\api\AttendanceController::class,'studentAttenShow']);
 Route::get('/studentAttendance',[App\Http\Controllers\api\AttendanceController::class,'studentAttendance']);
 
-
+///Driver
+Route::apiResource('drivers', App\Http\Controllers\api\DriverController::class);
+// Route::apiResource('DriverAttendance', App\Http\Controllers\api\AttendanceController::class);
+Route::post('driver/login',[App\Http\Controllers\api\DriverController::class, 'driverLogin'])->name('driver.login');
+Route::get('/DriverAttendance/{id}',[App\Http\Controllers\api\AttendanceController::class,'Show']);
+Route::get('/DriverAttendance',[App\Http\Controllers\api\AttendanceController::class,'index']);
+////  DriverAttendance
+Route::group( ['middleware' => ['auth:driver-api'] ],function(){
+    Route::post('DriverAttendance', App\Http\Controllers\api\AttendanceController::class, 'store');
+    Route::post('/driversUpdate/{id}',[App\Http\Controllers\api\DriverController::class,'update']);
+});
 
 /// CareTaker
 Route::apiResource('careTaker', App\Http\Controllers\api\CareTakerController::class);
-Route::post('/careTakerUpdate/{id}',[App\Http\Controllers\api\CareTakerController::class,'update']);
+Route::post('caretaker/login',[App\Http\Controllers\api\CareTakerController::class, 'caretakerLogin'])->name('caretaker.login');
+Route::get('/careTakerAttenShow/{id}',[App\Http\Controllers\api\AttendanceController::class,'careTakerAttenShow']);
+Route::get('/careTakerAttendance',[App\Http\Controllers\api\AttendanceController::class,'careTakerAttendance']);
+/// CareTakerAttendance
+Route::group( ['middleware' => ['auth:caretaker-api'] ],function(){
+    Route::post('/careTakerAttenStore',[App\Http\Controllers\api\AttendanceController::class,'careTakerAttenStore']);
+    Route::post('/careTakerUpdate/{id}',[App\Http\Controllers\api\CareTakerController::class,'update']);
+});
+
+
+
 
 Route::middleware('auth:api')->group( function () {
     // Route::resource('products', ProductController::class);
