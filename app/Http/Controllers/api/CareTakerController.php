@@ -71,7 +71,7 @@ class CareTakerController extends Controller
     {
         $validator = Validator::make($request->all(), [
             // 'reg_no' => 'required|unique:vehicles',
-            'email' => 'required|unique',
+            'email' => 'required|unique:care_takers,email',
         ]);
 
         if ($validator->fails()) {
