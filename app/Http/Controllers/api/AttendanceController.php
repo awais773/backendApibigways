@@ -94,7 +94,7 @@ class AttendanceController extends Controller
 
         // Calculate remaining seconds after subtracting total minutes
         $totalSeconds = $remainingSeconds % 60;
-        $item->total_hours = $totalHours . ':' . $totalMinutes . ':' . $totalSeconds . ':';
+        $item->total_hours = $totalHours . ':' . $totalMinutes . ':' . $totalSeconds . '';
         unset($item->created_at);
         unset($item->updated_at);
 
