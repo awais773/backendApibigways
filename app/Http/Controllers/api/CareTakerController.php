@@ -10,13 +10,15 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Passport\Token;
 use Illuminate\Support\Facades\Validator;
+use App\Mail\OtpVerificationMail;
+use Illuminate\Support\Facades\Mail;
 
 class CareTakerController extends Controller
 {
 
     public function index()
     {
-        $data = CareTaker::get();
+        $data = CareTaker::lastest()->get();
         if (is_null($data)) {
             return response()->json('data not found',);
         }
@@ -69,13 +71,14 @@ class CareTakerController extends Controller
     {
         $validator = Validator::make($request->all(), [
             // 'reg_no' => 'required|unique:vehicles',
+            'email' => 'required|unique',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 // 'message' => $validator->errors()->toJson()
-                'message' => 'Registration Number already exist',
+                'message' => 'Email already exist',
 
             ], 400);
         } {
@@ -232,4 +235,123 @@ class CareTakerController extends Controller
             ], 401);
         }
     }
+
+    public function forgotPassword(Request $request)
+    {
+        $user = $request->email;
+        $checkEmail = CareTaker::where('email', $user)->first();
+        if ($checkEmail) {
+            $otp = rand(100000, 999999);
+            $checkEmail->otp_number = $otp;
+            $checkEmail->update();
+            Mail::to($request->email)->send(new OtpVerificationMail($otp));
+            $token = $checkEmail->createToken('assessment')->accessToken;
+            $this->$checkEmail['token'] = 'Bearer ' . $token;
+            return response()->json([
+                'success' => true , 'message' => 'Otp sent successfully. Please check your email!',
+                'data' => $data = ([
+                    'token' => $token
+                ])
+            ]);
+        } else {
+            return response()->json(['success' => false, 'message' => 'this email is not exits']);
+        }
+    }
+    public function otpVerification(Request $request)
+   {
+       $otp = $request->input('otp');
+       $email = $request->input('email');
+
+       $this->success = false;
+       $this->message = 'Please enter a valid OTP numbere';
+       $this->data = [];
+
+       // Check if OTP and email are provided
+       if (!empty($otp) && !empty($email)) {
+           // Find the user by matching 'otp_number' and 'email'
+           $user = CareTaker::where('otp_number', $otp)->where('email', $email)->first();
+
+           if ($user) {
+               $user->otp_verify = 1;
+               $user->save();
+               $token = $user->createToken('assessment')->accessToken;
+               $userData = $user->toArray();
+               $this->data['token'] = 'Bearer ' . $token;
+               $this->data['user'] = $userData;
+               $this->success = true;
+               $this->message = 'Verification successful';
+           }
+       }
+
+       return response()->json([
+           'success' => $this->success,
+           'message' => $this->message,
+           'data' => $this->data
+       ]);
+   }
+   public function updatePassword(Request $request)
+    {
+        $this->validate($request, [
+            'email' => 'required',
+            'password' => 'required|min:6',
+            'confirm_password' => 'required|same:password'
+        ]);
+        $CareTaker = CareTaker::where('email', $request->email)->where('otp_verify', 1)->first();
+        // $user = User::where('email', $email)->where('otp_verify', 1)->first();
+
+        if ($CareTaker) {
+            // $user['is_verified'] = 0;
+            // $user['token'] = '';
+            $CareTaker['password'] = $request->password;
+            $CareTaker->save();
+            return response()->json(['success' => true, 'message' => 'Success! password has been changed',]);
+        }
+        return response()->json(['success' => false, 'message' => 'Failed! something went wrong',]);
+    }
+
+       public function resendEmail(Request $request)
+   {
+       $user = $request->email;
+       $checkEmail = CareTaker::where('email', $user)->first();
+       if (!$checkEmail) {
+           return response()->json([
+               'success' => false,
+               'message' => 'CareTaker not found',
+           ]);
+       }
+       $otp = rand(100000, 999999);
+           $checkEmail->otp_number = $otp;
+           $checkEmail->update();
+           Mail::to($request->email)->send(new OtpVerificationMail($otp));
+           $token = $checkEmail->createToken('assessment')->accessToken;
+           $this->$checkEmail['token'] = 'Bearer ' . $token;
+           return response()->json([
+               'success' => true , 'message' => 'Otp sent successfully. Please check your email!',
+               'data' => $data = ([
+                   'token' => $token
+               ])
+               ]);
+   }
+
+   public function PasswordChanged(Request $request)
+   {
+       $this->validate($request, [
+           'old_password' => 'required',
+       ]);
+
+       $user = Auth::user();
+       if ($user) {
+           // Check if the old password is correct
+           if ($request->old_password === $user->password) {
+               $user['password'] = $request->password;
+               $user->save();
+
+               return response()->json(['success' => true, 'message' => 'Success! Password has been changed']);
+           } else {
+               return response()->json(['success' => false, 'message' => 'Failed! Old password is incorrect']);
+           }
+       }
+
+       return response()->json(['success' => false, 'message' => 'Failed! Something went wrong']);
+   }
 }

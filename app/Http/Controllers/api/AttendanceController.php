@@ -80,13 +80,14 @@ class AttendanceController extends Controller
     {
         $validator = Validator::make($request->all(), [
             // 'reg_no' => 'required|unique:vehicles',
+             'email' => 'required|unique',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 // 'message' => $validator->errors()->toJson()
-                'message' => 'Registration Number already exist',
+                'message' => 'Email already exist',
 
             ], 400);
         } {
@@ -174,13 +175,14 @@ class AttendanceController extends Controller
     {
         $validator = Validator::make($request->all(), [
             // 'reg_no' => 'required|unique:vehicles',
+            'email' => 'required|unique',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 // 'message' => $validator->errors()->toJson()
-                'message' => 'Registration Number already exist',
+                'message' => 'Email already exist',
 
             ], 400);
         } {
@@ -251,13 +253,14 @@ class AttendanceController extends Controller
     {
         $validator = Validator::make($request->all(), [
             // 'reg_no' => 'required|unique:vehicles',
+            'email' => 'required|unique',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 // 'message' => $validator->errors()->toJson()
-                'message' => 'Registration Number already exist',
+                'message' => 'Email already exist',
 
             ], 400);
         } {
