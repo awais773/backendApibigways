@@ -80,7 +80,7 @@ class DriverController extends Controller
     {
         $validator = Validator::make($request->all(), [
             // 'reg_no' => 'required|unique:vehicles',
-            'email' => 'required|unique',
+            'email' => 'required|unique:drivers,email',
         ]);
 
         if ($validator->fails()) {

@@ -26,12 +26,12 @@ class RegistrationController extends Controller
         if (is_null($data)) {
             return response()->json('data not found',);
         }
-            $data->getCollection()->transform(function ($item) {
+        $data->transform(function ($item) {
             $item->date = date('Y-m-d', strtotime($item->created_at)); // Extract date
             $item->time = date('H:i:s', strtotime($item->created_at)); // Extract time from created_at
             unset($item->created_at);
             return $item;
-            });
+        });
         return response()->json([
             'success' => true,
             'message' => 'All Data susccessfull',
