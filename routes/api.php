@@ -63,25 +63,36 @@ Route::get('/studentAttendance',[App\Http\Controllers\api\AttendanceController::
 
 ///Driver
 Route::apiResource('drivers', App\Http\Controllers\api\DriverController::class);
+Route::post('/driversUpdate/{id}',[App\Http\Controllers\api\DriverController::class,'update']);
 // Route::apiResource('DriverAttendance', App\Http\Controllers\api\AttendanceController::class);
 Route::post('driver/login',[App\Http\Controllers\api\DriverController::class, 'driverLogin'])->name('driver.login');
+Route::post('/driver/forgotPassword', [App\Http\Controllers\api\DriverController::class, 'forgotPassword']);
+Route::post('/driver/otp/verify', [App\Http\Controllers\api\DriverController::class, 'otpVerification']);
+Route::post('/driver/updatePassword', [App\Http\Controllers\api\DriverController::class, 'updatePassword']);
+Route::post('/driver/resendEmail',[App\Http\Controllers\api\DriverController::class,'resendEmail']);
+
 Route::get('/DriverAttendance/{id}',[App\Http\Controllers\api\AttendanceController::class,'Show']);
 Route::get('/DriverAttendance',[App\Http\Controllers\api\AttendanceController::class,'index']);
 ////  DriverAttendance
 Route::group( ['middleware' => ['auth:driver-api'] ],function(){
-    Route::post('DriverAttendance', App\Http\Controllers\api\AttendanceController::class, 'store');
-    Route::post('/driversUpdate/{id}',[App\Http\Controllers\api\DriverController::class,'update']);
+    Route::post('DriverAttendance', [App\Http\Controllers\api\AttendanceController::class, 'store']);
+    Route::post('/driver/PasswordChanged ', [App\Http\Controllers\api\DriverController::class, 'PasswordChanged']);
 });
 
 /// CareTaker
 Route::apiResource('careTaker', App\Http\Controllers\api\CareTakerController::class);
+Route::post('/careTakerUpdate/{id}',[App\Http\Controllers\api\CareTakerController::class,'update']);
+Route::post('/careTaker/forgotPassword', [App\Http\Controllers\api\CareTakerController::class, 'forgotPassword']);
+Route::post('/careTaker/otp/verify', [App\Http\Controllers\api\CareTakerController::class, 'otpVerification']);
+Route::post('/careTaker/updatePassword', [App\Http\Controllers\api\CareTakerController::class, 'updatePassword']);
+Route::post('/careTaker/resendEmail',[App\Http\Controllers\api\CareTakerController::class,'resendEmail']);
 Route::post('caretaker/login',[App\Http\Controllers\api\CareTakerController::class, 'caretakerLogin'])->name('caretaker.login');
 Route::get('/careTakerAttenShow/{id}',[App\Http\Controllers\api\AttendanceController::class,'careTakerAttenShow']);
 Route::get('/careTakerAttendance',[App\Http\Controllers\api\AttendanceController::class,'careTakerAttendance']);
 /// CareTakerAttendance
 Route::group( ['middleware' => ['auth:caretaker-api'] ],function(){
     Route::post('/careTakerAttenStore',[App\Http\Controllers\api\AttendanceController::class,'careTakerAttenStore']);
-    Route::post('/careTakerUpdate/{id}',[App\Http\Controllers\api\CareTakerController::class,'update']);
+    Route::post('/careTaker/PasswordChanged ', [App\Http\Controllers\api\CareTakerController::class, 'PasswordChanged']);
 });
 
 
