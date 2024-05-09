@@ -4,12 +4,18 @@ namespace App\Http\Controllers\api;
 
 use App\Models\User;
 use App\Models\Vehicle;
+use App\Models\CareTaker;
+use App\Models\Driver;
+use App\Models\Student;
+use App\Models\DriverAttendance;
+use App\Models\StudentAttendance;
+use Carbon\Carbon;
 use App\Mail\BigwaysMail;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use function Laravel\Prompts\password;
 use Illuminate\Support\Facades\Validator;
@@ -231,6 +237,9 @@ class RegistrationController extends Controller
             if (!empty($request->input('vehicle_id'))) {
                 $obj->vehicle_id = $request->input('vehicle_id');
             }
+            if (!empty($request->input('email'))) {
+                $obj->status = $request->input('email');
+            }
             $obj->save();
         }
         return response()->json([
@@ -257,4 +266,83 @@ class RegistrationController extends Controller
             ]);
         }
     }
+    public function dashboard()
+    {
+        $totalCareTakers = CareTaker::count();
+        $totalVehicles = Vehicle::count();
+        $totalDrivers = Driver::count();
+        $totalStudents = Student::count();
+        $totalParents = User::where('type', 'parents')->where('status', 'Approved')->count();
+        $totalPendingRequests = User::where('type', 'parents')->where('status', 'Pending')->count();
+
+        $todayDriverAttendance = DriverAttendance::whereDate('created_at', Carbon::today())->count();
+
+        $totalDriverPresentToday = DriverAttendance::whereDate('created_at', Carbon::today())
+                                    ->where('attendance', 'Present')->count();
+
+        $totalDriverAbsentToday = DriverAttendance::whereDate('created_at', Carbon::today())
+                                    ->where('attendance', 'Absent')->count();
+
+        $todayStudentAttendance = StudentAttendance::whereDate('created_at', Carbon::today())->count();
+
+        $totalStudentPresentToday = StudentAttendance::whereDate('created_at', Carbon::today())
+                                    ->where('attendance', 'Present')->count();
+
+        $totalStudentAbsentToday = StudentAttendance::whereDate('created_at', Carbon::today())
+                                    ->where('attendance', 'Absent')->count();
+
+        $data = [
+            'total_careTakers' => $totalCareTakers,
+            'total_vehicles' => $totalVehicles,
+            'total_drivers' => $totalDrivers,
+            'total_students' => $totalStudents,
+            'total_parents' => $totalParents,
+            'total_pending_requests' => $totalPendingRequests,
+            'today_drivers_attendance' => $todayDriverAttendance,
+            'total_drivers_present_today' => $totalDriverPresentToday,
+            'total_drivers_absent_today' => $totalDriverAbsentToday,
+            'today_students_attendance' => $todayStudentAttendance,
+            'total_students_present_today' => $totalStudentPresentToday,
+            'total_students_absent_today' => $totalStudentAbsentToday,
+        ];
+
+        return response()->json([
+            'success' => true,
+            'total_counts' => $data,
+        ]);
+    }
+    public function getMonthlyPendingRequests()
+    {
+        $monthlyRequests = DB::table(DB::raw('(SELECT 1 as month UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10 UNION SELECT 11 UNION SELECT 12) as months'))
+        ->leftJoin('users', function($join) {
+            $join->on(DB::raw('MONTH(users.created_at)'), '=', 'months.month')
+                ->where('users.type', 'parents')
+                ->where('users.status', 'Pending');
+        })
+        ->select(
+            'months.month',
+            DB::raw('COALESCE(COUNT(users.id), 0) as pending_requests')
+        )
+        ->groupBy('months.month')
+        ->get();
+
+    return response()->json($monthlyRequests);
+    }
+    public function getMonthlyApprovedRequests()
+{
+    $monthlyRequests = DB::table(DB::raw('(SELECT 1 as month UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10 UNION SELECT 11 UNION SELECT 12) as months'))
+        ->leftJoin('users', function($join) {
+            $join->on(DB::raw('MONTH(users.created_at)'), '=', 'months.month')
+            ->where('users.type', 'parents')
+            ->where('users.status', 'Approved');
+        })
+        ->select(
+            'months.month',
+            DB::raw('COALESCE(COUNT(users.id), 0) as approved_requests')
+        )
+        ->groupBy('months.month')
+        ->get();
+
+    return response()->json($monthlyRequests);
+}
 }

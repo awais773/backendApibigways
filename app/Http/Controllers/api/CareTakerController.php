@@ -18,7 +18,7 @@ class CareTakerController extends Controller
 
     public function index()
     {
-        $data = CareTaker::lastest()->get();
+        $data = CareTaker::latest()->get();
         if (is_null($data)) {
             return response()->json('data not found',);
         }
