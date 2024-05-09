@@ -95,7 +95,10 @@ Route::group( ['middleware' => ['auth:caretaker-api'] ],function(){
     Route::post('/careTaker/PasswordChanged ', [App\Http\Controllers\api\CareTakerController::class, 'PasswordChanged']);
 });
 
-
+///Dashboard
+Route::get('/dashboard', [App\Http\Controllers\api\RegistrationController::class, 'dashboard']);
+Route::get('/MonthlyPendingRequest', [App\Http\Controllers\api\RegistrationController::class, 'getMonthlyPendingRequests']);
+Route::get('/MonthlyApprovedRequest', [App\Http\Controllers\api\RegistrationController::class, 'getMonthlyApprovedRequests']);
 
 
 Route::middleware('auth:api')->group( function () {

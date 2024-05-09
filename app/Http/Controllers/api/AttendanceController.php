@@ -113,7 +113,6 @@ class AttendanceController extends Controller
     {
         $validator = Validator::make($request->all(), [
             // 'reg_no' => 'required|unique:vehicles',
-             'email' => 'required|unique',
         ]);
 
         if ($validator->fails()) {
@@ -208,7 +207,6 @@ class AttendanceController extends Controller
     {
         $validator = Validator::make($request->all(), [
             // 'reg_no' => 'required|unique:vehicles',
-            'email' => 'required|unique',
         ]);
 
         if ($validator->fails()) {
@@ -286,7 +284,6 @@ class AttendanceController extends Controller
     {
         $validator = Validator::make($request->all(), [
             // 'reg_no' => 'required|unique:vehicles',
-            'email' => 'required|unique',
         ]);
 
         if ($validator->fails()) {
