@@ -238,7 +238,7 @@ class RegistrationController extends Controller
                 $obj->vehicle_id = $request->input('vehicle_id');
             }
             if (!empty($request->input('email'))) {
-                $obj->status = $request->input('email');
+                $obj->email = $request->input('email');
             }
             $obj->save();
         }
