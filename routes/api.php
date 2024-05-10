@@ -100,6 +100,13 @@ Route::get('/dashboard', [App\Http\Controllers\api\RegistrationController::class
 Route::get('/MonthlyPendingRequest', [App\Http\Controllers\api\RegistrationController::class, 'getMonthlyPendingRequests']);
 Route::get('/MonthlyApprovedRequest', [App\Http\Controllers\api\RegistrationController::class, 'getMonthlyApprovedRequests']);
 
+///Expense
+// Route::apiResource('expense', App\Http\Controllers\api\ExpenseController::class);
+Route::get('/expense', [App\Http\Controllers\api\ExpenseController::class, 'index']);
+Route::post('/expenseStore', [App\Http\Controllers\api\ExpenseController::class, 'store']);
+Route::get('/expenseShow/{id}', [App\Http\Controllers\api\ExpenseController::class, 'show']);
+Route::post('/expenseUpdate/{id}', [App\Http\Controllers\api\ExpenseController::class, 'update']);
+Route::delete('/expenseDelete/{id}', [App\Http\Controllers\api\ExpenseController::class, 'destroy']);
 
 Route::middleware('auth:api')->group( function () {
     // Route::resource('products', ProductController::class);
