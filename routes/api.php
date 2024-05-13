@@ -99,6 +99,9 @@ Route::group( ['middleware' => ['auth:caretaker-api'] ],function(){
 Route::get('/dashboard', [App\Http\Controllers\api\RegistrationController::class, 'dashboard']);
 Route::get('/MonthlyPendingRequest', [App\Http\Controllers\api\RegistrationController::class, 'getMonthlyPendingRequests']);
 Route::get('/MonthlyApprovedRequest', [App\Http\Controllers\api\RegistrationController::class, 'getMonthlyApprovedRequests']);
+Route::get('/earnings', [App\Http\Controllers\api\RegistrationController::class, 'Earnings']);
+Route::get('/getMonthlyExpenses', [App\Http\Controllers\api\RegistrationController::class, 'getMonthlyExpenses']);
+Route::get('/getMonthlyEarnings', [App\Http\Controllers\api\RegistrationController::class, 'getMonthlyEarnings']);
 
 ///Expense
 // Route::apiResource('expense', App\Http\Controllers\api\ExpenseController::class);
@@ -107,6 +110,14 @@ Route::post('/expenseStore', [App\Http\Controllers\api\ExpenseController::class,
 Route::get('/expenseShow/{id}', [App\Http\Controllers\api\ExpenseController::class, 'show']);
 Route::post('/expenseUpdate/{id}', [App\Http\Controllers\api\ExpenseController::class, 'update']);
 Route::delete('/expenseDelete/{id}', [App\Http\Controllers\api\ExpenseController::class, 'destroy']);
+
+///Fuel Expense
+// Route::apiResource('fuelexpense', App\Http\Controllers\api\FuelExpenseController::class);
+Route::get('/fuelexpense', [App\Http\Controllers\api\FuelExpenseController::class, 'index']);
+Route::post('/fuelexpenseStore', [App\Http\Controllers\api\FuelExpenseController::class, 'store']);
+Route::get('/fuelexpenseShow/{id}', [App\Http\Controllers\api\FuelExpenseController::class, 'show']);
+Route::post('/fuelexpenseUpdate/{id}', [App\Http\Controllers\api\FuelExpenseController::class, 'update']);
+Route::delete('/fuelexpenseDelete/{id}', [App\Http\Controllers\api\FuelExpenseController::class, 'destroy']);
 
 Route::middleware('auth:api')->group( function () {
     // Route::resource('products', ProductController::class);

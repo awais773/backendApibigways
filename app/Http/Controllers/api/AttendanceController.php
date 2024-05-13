@@ -72,10 +72,9 @@ class AttendanceController extends Controller
     $data = DriverAttendance::with('driver:id,name')
         ->where('driver_id', $id)
         ->whereBetween('created_at', [$startDate, $endDate])
-        ->latest()
-        ->paginate(10);
+        ->latest();
 
-    $data->getCollection()->transform(function ($item) {
+    $data->transform(function ($item) {
         $item->date = date('Y-m-d', strtotime($item->created_at)); // Extract date
         $item->check_in_time = date('H:i:s', strtotime($item->created_at)); // Extract check-in time from created_at
         $item->check_out_time = date('H:i:s', strtotime($item->updated_at)); // Extract check-out time from updated_at
@@ -249,6 +248,7 @@ class AttendanceController extends Controller
     }
     public function studentAttenShow(Request $request, $id)
     {
+        $search = $request->input('search');
         $selectedDate = $request->input('selected_date');
         $endedDate = $request->input('ended_date');
 
@@ -263,10 +263,27 @@ class AttendanceController extends Controller
             $endDate = $endedDate->copy()->endOfMonth();
         }
 
-        $data = StudentAttendance::with('student:id,student_name','vehicle:id,name,vehicle_number')
-        ->where('student_id',$id)
-        ->whereBetween('created_at', [$startDate, $endDate])->latest()
-        ->get();
+        $query = StudentAttendance::with('student:id,student_name','vehicle:id,name,vehicle_number')
+        ->where('student_id', $id)
+        ->whereBetween('created_at', [$startDate, $endDate]);
+
+    if ($search) {
+        $query->where(function ($q) use ($search) {
+            $q->where('id', 'LIKE', "%$search%")
+              ->orWhere('attendance', 'LIKE', "%$search%")
+              ->orWhereDate('created_at', 'LIKE', "%$search%")
+              ->orWhereHas('student', function ($q) use ($search) {
+                  $q->where('id', 'LIKE', "%$search%")
+                    ->orWhere('student_name', 'LIKE', "%$search%")
+                    ->orWhere('school_name', 'LIKE', "%$search%");
+              })
+              ->orWhereHas('vehicle', function ($q) use ($search) {
+                  $q->Where('name', 'LIKE', "%$search%")
+                    ->orWhere('vehicle_number', 'LIKE', "%$search%");
+              });
+        });
+    }
+        $data = $query->latest()->paginate(10);
         $data->transform(function ($item) {
             $item->date = date('Y-m-d', strtotime($item->created_at)); // Extract date
             $item->time = date('H:i:s', strtotime($item->created_at)); // Extract time

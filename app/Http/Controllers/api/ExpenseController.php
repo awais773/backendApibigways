@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
 use App\Models\Expense;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -15,7 +16,7 @@ class ExpenseController extends Controller
      */
     public function index()
     {
-        $data = Expense::all();
+        $data = Expense::latest()->get();
         return response()->json([
             'success' => true,
             'message' => 'All Data susccessfull',
@@ -32,6 +33,7 @@ class ExpenseController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string',
             'amount' => 'required|numeric',
+            'type' => 'required|string|in:others,fuel',
             ]);
             if ($validator->fails())
             {
@@ -87,6 +89,15 @@ class ExpenseController extends Controller
                 }
                 if (!empty($request->input('amount'))) {
                     $data->amount = $request->input('amount');
+                }
+                if (!empty($request->input('type'))) {
+                    $data->type = $request->input('type');
+                }
+                if (!empty($request->input('vehicle_id'))) {
+                    $data->vehicle_id = $request->input('vehicle_id');
+                }
+                if (!empty($request->input('driver_id'))) {
+                    $data->driver_id = $request->input('driver_id');
                 }
                 if ($file = $request->file('image')) {
                     $video_name = md5(rand(1000, 10000));
