@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Vehicle;
 use App\Models\CareTaker;
 use App\Models\Driver;
+use App\Models\Expense;
 use App\Models\Student;
 use App\Models\DriverAttendance;
 use App\Models\StudentAttendance;
@@ -290,6 +291,16 @@ class RegistrationController extends Controller
 
         $totalStudentAbsentToday = StudentAttendance::whereDate('created_at', Carbon::today())
                                     ->where('attendance', 'Absent')->count();
+        $currentMonthEarnings = User::where('type', 'parents')->where('status', 'Approved')
+        ->whereYear('created_at', Carbon::now()->year)
+        ->whereMonth('created_at', Carbon::now()->month)
+        ->sum('amount');
+
+        $fuelExpense = Expense::where('type', 'fuel')->sum('amount');
+        $othersExpense = Expense::where('type', 'others')->sum('amount');
+        $totalEarning = User::where('type', 'parents')->where('status', 'Approved')->sum('amount');
+        $netEarnings = $totalEarning - ($fuelExpense + $othersExpense);
+        $totalExpense = $fuelExpense + $othersExpense;
 
         $data = [
             'total_careTakers' => $totalCareTakers,
@@ -304,6 +315,9 @@ class RegistrationController extends Controller
             'today_students_attendance' => $todayStudentAttendance,
             'total_students_present_today' => $totalStudentPresentToday,
             'total_students_absent_today' => $totalStudentAbsentToday,
+            'net_earning' => $netEarnings,
+            'total_expense' => $totalExpense,
+            'current_month_earning' => $currentMonthEarnings,
         ];
 
         return response()->json([
@@ -345,4 +359,63 @@ class RegistrationController extends Controller
 
     return response()->json($monthlyRequests);
 }
+public function Earnings(Request $request)
+{
+    $fuelExpense = Expense::where('type', 'fuel')->sum('amount');
+    $othersExpense = Expense::where('type', 'others')->sum('amount');
+    $totalEarning = User::where('type', 'parents')->where('status', 'Approved')->sum('amount');
+
+    $netEarnings = $totalEarning - ($fuelExpense + $othersExpense);
+
+    $fuelExpensePercentage = ($fuelExpense / ($fuelExpense + $othersExpense)) * 100;
+    $othersExpensePercentage = ($othersExpense / ($fuelExpense + $othersExpense)) * 100;
+    $earningsPercentage = ($netEarnings / $totalEarning) * 100;
+
+    return response()->json([
+        'success' => true,
+        'data' =>$data = ([
+            'fuel_expense' => $fuelExpense,
+            'fuel_expense_percentage' => $fuelExpensePercentage,
+            'others_expense' => $othersExpense,
+            'others_expense_percentage' => $othersExpensePercentage,
+            'earning' => $totalEarning,
+            'net_earning' => $netEarnings,
+            'earnings_percentage' => $earningsPercentage,
+            ])
+    ]);
+}
+public function getMonthlyExpenses()
+{
+    $monthlyExpenses = DB::table(DB::raw('(SELECT 1 as month UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10 UNION SELECT 11 UNION SELECT 12) as months'))
+        ->leftJoin('expenses', function($join) {
+            $join->on(DB::raw('MONTH(expenses.created_at)'), '=', 'months.month');
+        })
+        ->select(
+            'months.month',
+            DB::raw('COALESCE(SUM(expenses.amount), 0) as monthly_expense')
+        )
+        ->groupBy('months.month')
+        ->get();
+
+    return response()->json($monthlyExpenses);
+}
+public function getMonthlyEarnings()
+{
+    $monthlyEarnings = DB::table(DB::raw('(SELECT 1 as month UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10 UNION SELECT 11 UNION SELECT 12) as months'))
+        ->leftJoin('users', function($join) {
+            $join->on(DB::raw('MONTH(users.created_at)'), '=', 'months.month')
+                ->where('users.type', 'parents')
+                ->where('users.status', 'Approved');
+        })
+        ->select(
+            'months.month',
+            DB::raw('COALESCE(SUM(users.amount), 0) as monthly_earning')
+        )
+        ->groupBy('months.month')
+        ->get();
+
+    return response()->json($monthlyEarnings);
+}
+
+
 }
