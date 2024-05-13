@@ -72,7 +72,7 @@ class AttendanceController extends Controller
     $data = DriverAttendance::with('driver:id,name')
         ->where('driver_id', $id)
         ->whereBetween('created_at', [$startDate, $endDate])
-        ->latest();
+        ->latest()->get();
 
     $data->transform(function ($item) {
         $item->date = date('Y-m-d', strtotime($item->created_at)); // Extract date
