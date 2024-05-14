@@ -110,6 +110,7 @@ Route::post('/expenseStore', [App\Http\Controllers\api\ExpenseController::class,
 Route::get('/expenseShow/{id}', [App\Http\Controllers\api\ExpenseController::class, 'show']);
 Route::post('/expenseUpdate/{id}', [App\Http\Controllers\api\ExpenseController::class, 'update']);
 Route::delete('/expenseDelete/{id}', [App\Http\Controllers\api\ExpenseController::class, 'destroy']);
+Route::get('/earningreport', [App\Http\Controllers\api\ExpenseController::class, 'earningReport']);
 
 Route::middleware('auth:api')->group( function () {
     // Route::resource('products', ProductController::class);

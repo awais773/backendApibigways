@@ -95,7 +95,7 @@ class RegistrationController extends Controller
 
     public function show($id)
     {
-        $data = User::with('vehicle')->where('id',$id)->first();
+        $data = User::with('vehicle')->where('id',$id)->get();
         // foreach ($data as $Driver) {
         //     $Driver->image = json_decode($Driver->image); // Decode the JSON-encoded location string
         // }

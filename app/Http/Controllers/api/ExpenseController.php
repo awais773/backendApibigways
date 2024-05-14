@@ -4,6 +4,7 @@ namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
 use App\Models\Expense;
 use App\Models\User;
+use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -16,10 +17,10 @@ class ExpenseController extends Controller
      */
     public function index()
     {
-        $data = Expense::latest()->get();
+        $data = Expense::with('vehicle', 'driver')->latest()->get();
         return response()->json([
             'success' => true,
-            'message' => 'All Data susccessfull',
+            'message' => 'All Data successfully',
             'data' => $data,
         ]);
     }
@@ -56,7 +57,7 @@ class ExpenseController extends Controller
                 $data->save();
                 return response()->json([
                     'success' => true,
-                    'message' => 'Expense Create successfull',
+                    'message' => 'Expense Create successfully',
                     'date' => $data,
                 ], 200);
             }
@@ -133,7 +134,7 @@ class ExpenseController extends Controller
             $data->delete();
             return response()->json([
                 'success' => true,
-                'message' => ' delete successfuly',
+                'message' => ' delete successfully',
             ], 200);
         } else {
             return response()->json([
@@ -142,4 +143,15 @@ class ExpenseController extends Controller
             ]);
         }
     }
+    public function earningReport()
+{
+    $data = User::where('type', 'parents')
+        ->select('id', 'name','total_students','payments_status','proof_image')
+        ->get();
+    return response()->json([
+        'success' => true,
+        'message' => 'Earning report successfully',
+        'data' => $data,
+    ]);
+}
 }
