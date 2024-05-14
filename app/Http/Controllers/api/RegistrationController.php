@@ -299,7 +299,7 @@ class RegistrationController extends Controller
         $fuelExpense = Expense::where('type', 'fuel')->sum('amount');
         $othersExpense = Expense::where('type', 'others')->sum('amount');
         $totalEarning = User::where('type', 'parents')->where('status', 'Approved')->sum('amount');
-        $netEarnings = $totalEarning - ($fuelExpense + $othersExpense);
+        $netEarnings = number_format($totalEarning - ($fuelExpense + $othersExpense));
         $totalExpense = $fuelExpense + $othersExpense;
 
         $data = [
@@ -367,9 +367,9 @@ public function Earnings(Request $request)
 
     $netEarnings = $totalEarning - ($fuelExpense + $othersExpense);
 
-    $fuelExpensePercentage = ($fuelExpense / ($fuelExpense + $othersExpense)) * 100;
-    $othersExpensePercentage = ($othersExpense / ($fuelExpense + $othersExpense)) * 100;
-    $earningsPercentage = ($netEarnings / $totalEarning) * 100;
+    $fuelExpensePercentage = number_format(($fuelExpense / ($fuelExpense + $othersExpense)) * 100);
+    $othersExpensePercentage = number_format(($othersExpense / ($fuelExpense + $othersExpense)) * 100);
+    $earningsPercentage = number_format(($netEarnings / $totalEarning) * 100);
 
     return response()->json([
         'success' => true,

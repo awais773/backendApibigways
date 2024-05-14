@@ -111,14 +111,6 @@ Route::get('/expenseShow/{id}', [App\Http\Controllers\api\ExpenseController::cla
 Route::post('/expenseUpdate/{id}', [App\Http\Controllers\api\ExpenseController::class, 'update']);
 Route::delete('/expenseDelete/{id}', [App\Http\Controllers\api\ExpenseController::class, 'destroy']);
 
-///Fuel Expense
-// Route::apiResource('fuelexpense', App\Http\Controllers\api\FuelExpenseController::class);
-Route::get('/fuelexpense', [App\Http\Controllers\api\FuelExpenseController::class, 'index']);
-Route::post('/fuelexpenseStore', [App\Http\Controllers\api\FuelExpenseController::class, 'store']);
-Route::get('/fuelexpenseShow/{id}', [App\Http\Controllers\api\FuelExpenseController::class, 'show']);
-Route::post('/fuelexpenseUpdate/{id}', [App\Http\Controllers\api\FuelExpenseController::class, 'update']);
-Route::delete('/fuelexpenseDelete/{id}', [App\Http\Controllers\api\FuelExpenseController::class, 'destroy']);
-
 Route::middleware('auth:api')->group( function () {
     // Route::resource('products', ProductController::class);
     Route::post('/update/profile', [App\Http\Controllers\api\AuthenticateController::class, 'updateProfile']);
