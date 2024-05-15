@@ -108,6 +108,20 @@ class RegistrationController extends Controller
     }
 
 
+    public function paymentsDetails($id)
+    {
+        $data = User::with('vehicle')->where('id',$id)->get();
+        // foreach ($data as $Driver) {
+        //     $Driver->image = json_decode($Driver->image); // Decode the JSON-encoded location string
+        // }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'All Data successful',
+            'data' => $data,
+        ]);
+    }
+
 
     public function store(Request $request)
     {

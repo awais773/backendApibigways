@@ -39,6 +39,7 @@ Route::apiResource('registration', App\Http\Controllers\api\RegistrationControll
 Route::post('/registrationUpdate/{id}',[App\Http\Controllers\api\RegistrationController::class,'update']);
 Route::post('/updateReguest/{id}',[App\Http\Controllers\api\RegistrationController::class,'updateReguest']);
 Route::get('/approved',[App\Http\Controllers\api\RegistrationController::class,'approved']);
+Route::get('/paymentsDetails/{id}',[App\Http\Controllers\api\RegistrationController::class,'paymentsDetails']);
 
 
 /////////////////////////////////////////////
