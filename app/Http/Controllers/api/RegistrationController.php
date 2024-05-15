@@ -241,6 +241,9 @@ class RegistrationController extends Controller
             if (!empty($request->input('email'))) {
                 $obj->email = $request->input('email');
             }
+            if (!empty($request->input('payments_status'))) {
+                $obj->payments_status = $request->input('payments_status');
+            }
             $obj->save();
         }
         return response()->json([
@@ -317,7 +320,7 @@ class RegistrationController extends Controller
             'total_students_absent_today' => $totalStudentAbsentToday,
             'net_earning' => $netEarnings,
             'total_expense' => $totalExpense,
-            'current_month_earning' => $currentMonthEarnings,
+            'current_month_earning' => number_format($currentMonthEarnings),
         ];
 
         return response()->json([
