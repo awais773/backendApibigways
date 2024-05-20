@@ -11,6 +11,10 @@ class Vehicle extends Model
    protected $guarded = [];
 
    public function driver() {
-    return $this->belongsTo(Driver::class, 'id', 'vehicle_id');  
+    return $this->belongsTo(Driver::class, 'id', 'vehicle_id');
 }
+    public function zone()
+    {
+        return $this->belongsTo(Zone::class);
+    }
 }

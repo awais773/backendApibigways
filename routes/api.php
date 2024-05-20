@@ -41,6 +41,7 @@ Route::post('/updateReguest/{id}',[App\Http\Controllers\api\RegistrationControll
 Route::get('/approved',[App\Http\Controllers\api\RegistrationController::class,'approved']);
 Route::get('/paymentsDetails/{id}',[App\Http\Controllers\api\RegistrationController::class,'paymentsDetails']);
 
+Route::post('/updateStatus/{id}',[App\Http\Controllers\api\RegistrationController::class,'updateStatus']);
 
 /////////////////////////////////////////////
 
@@ -112,6 +113,30 @@ Route::get('/expenseShow/{id}', [App\Http\Controllers\api\ExpenseController::cla
 Route::post('/expenseUpdate/{id}', [App\Http\Controllers\api\ExpenseController::class, 'update']);
 Route::delete('/expenseDelete/{id}', [App\Http\Controllers\api\ExpenseController::class, 'destroy']);
 Route::get('/earningreport', [App\Http\Controllers\api\ExpenseController::class, 'earningReport']);
+
+///School
+// Route::resource('schools', App\Http\Controllers\api\SchoolController::class);
+Route::get('/schools', [App\Http\Controllers\api\SchoolController::class, 'index']);
+Route::post('/schoolsStore', [App\Http\Controllers\api\SchoolController::class, 'store']);
+Route::get('/schoolsShow/{id}', [App\Http\Controllers\api\SchoolController::class, 'show']);
+Route::post('/schoolsUpdate/{id}', [App\Http\Controllers\api\SchoolController::class, 'update']);
+Route::delete('/schoolsDelete/{id}', [App\Http\Controllers\api\SchoolController::class, 'destroy']);
+
+///pickupPoints
+// Route::resource('pickupPoints', App\Http\Controllers\api\PickupPointController::class);
+Route::get('/pickupPoints', [App\Http\Controllers\api\PickupPointController::class, 'index']);
+Route::post('/pickupPointsStore', [App\Http\Controllers\api\PickupPointController::class, 'store']);
+Route::get('/pickupPointsShow/{id}', [App\Http\Controllers\api\PickupPointController::class, 'show']);
+Route::post('/pickupPointsUpdate/{id}', [App\Http\Controllers\api\PickupPointController::class, 'update']);
+Route::delete('/pickupPointsDelete/{id}', [App\Http\Controllers\api\PickupPointController::class, 'destroy']);
+
+///pickupPoints
+// Route::resource('zones', App\Http\Controllers\api\ZoneController::class);
+Route::get('/zones', [App\Http\Controllers\api\ZoneController::class, 'index']);
+Route::post('/zonesStore', [App\Http\Controllers\api\ZoneController::class, 'store']);
+Route::get('/zonesShow/{id}', [App\Http\Controllers\api\ZoneController::class, 'show']);
+Route::post('/zonesUpdate/{id}', [App\Http\Controllers\api\ZoneController::class, 'update']);
+Route::delete('/zonesDelete/{id}', [App\Http\Controllers\api\ZoneController::class, 'destroy']);
 
 Route::middleware('auth:api')->group( function () {
     // Route::resource('products', ProductController::class);
