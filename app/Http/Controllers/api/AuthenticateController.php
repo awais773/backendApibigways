@@ -239,13 +239,13 @@ class AuthenticateController extends Controller
            $token = $checkEmail->createToken('assessment')->accessToken;
            $this->$checkEmail['token'] = 'Bearer ' . $token;
            return response()->json([
-               'success' => true , 'message' => 'Otp sent successfully. Please check your email!',
+               'success' => true , 'message' => 'Otp sent successfully. Please check your Email!',
                'data' => $data = ([
                    'token' => $token
                ])
            ]);
        } else {
-           return response()->json(['success' => false, 'message' => 'this email is not exits']);
+           return response()->json(['success' => false, 'message' => 'this email is not exist.']);
        }
    }
 
