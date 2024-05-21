@@ -12,7 +12,16 @@ class Student extends Model
     protected $guarded = [];
 
     public function parent() {
-        return $this->hasOne(User::class, 'id', 'parent_id');  
+        return $this->hasOne(User::class, 'id', 'parent_id');
     }
-
+    public function zone()
+    {
+        return $this->belongsTo(Zone::class);
+    }
+    public function vehicle() {
+        return $this->hasOne(Vehicle::class, 'id', 'vehicle_id');
+    }
+    public function driver() {
+        return $this->hasOne(Driver::class, 'vehicle_id');
+    }
 }

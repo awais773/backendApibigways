@@ -94,6 +94,9 @@ class SchoolController extends Controller
             if (!empty($request->input('pickup_latitude'))) {
                 $data->pickup_latitude = $request->input('pickup_latitude');
             }
+            if (!empty($request->input('amount'))) {
+                $data->amount = $request->input('amount');
+            }
             $data->save();
 
             return response()->json([

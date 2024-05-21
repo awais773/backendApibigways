@@ -16,7 +16,6 @@ class Driver extends Authenticatable
     protected $guarded = [];
 
     public function vehicle() {
-        return $this->hasOne(Vehicle::class, 'id', 'vehicle_id');
+        return $this->hasOne(Vehicle::class, 'vehicle_id', 'id');
     }
-
 }
