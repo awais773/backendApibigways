@@ -32,4 +32,7 @@ class Zone extends Model
     {
         return $this->belongsTo(PickupPoint::class);
     }
+    public function schools(){
+        return $this->belongsTo(School::class, 'schools_id');
+    }
 }

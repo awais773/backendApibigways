@@ -13,19 +13,39 @@ use Illuminate\Support\Facades\Validator;
 class StudentController extends Controller
 {
 
+    // public function index()
+    // {
+    //     // $data = Student::where('parent_id', Auth::user()->id)->with('parent')->get();
+    //     $data = Student::where('parent_id', Auth::id())
+    //     ->with(['parent.driver' => function($query) {
+    //         $query->select('drivers.id', 'drivers.mobile');
+    //     }])
+    //     ->get();
+    //     if (is_null($data)) {
+    //         return response()->json('data not found',);
+    //     }
+    //     return response()->json([
+    //         'success' => true,
+    //         'message' => 'All Data susccessfull',
+    //         'data' => $data,
+    //     ]);
+    // }
     public function index()
     {
-        $data = Student::where('parent_id', Auth::user()->id)->with('parent')->get();
-        if (is_null($data)) {
-            return response()->json('data not found',);
+        $data = Student::where('parent_id', Auth::id())
+            ->with(['vehicle.driver:vehicle_id,mobile'])
+            ->latest()->get();
+
+        if ($data->isEmpty()) {
+            return response()->json(['message' => 'Data not found'], 404);
         }
+
         return response()->json([
             'success' => true,
-            'message' => 'All Data susccessfull',
+            'message' => 'All Data successful',
             'data' => $data,
         ]);
     }
-
     public function studentGet($id)
     {
         $data = Student::where('parent_id', $id)->get();
@@ -59,7 +79,9 @@ class StudentController extends Controller
 
     public function show($id)
     {
-        $data = Student::find($id);
+        // $data = Student::find($id);
+        $data = Student::with(['vehicle.driver:vehicle_id,mobile'])
+        ->latest()->get();
 
         // foreach ($data as $Driver) {
         //     $Driver->image = json_decode($Driver->image); // Decode the JSON-encoded location string
@@ -162,6 +184,24 @@ class StudentController extends Controller
             }
             if (!empty($request->input('parent_id'))) {
                 $obj->parent_id = $request->input('parent_id');
+            }
+            if (!empty($request->input('vehicle_id'))) {
+                $obj->vehicle_id = $request->input('vehicle_id');
+            }
+            if (!empty($request->input('zone_id'))) {
+                $obj->zone_id = $request->input('zone_id');
+            }
+            if (!empty($request->input('amount'))) {
+                $obj->amount = $request->input('amount');
+            }
+            if (!empty($request->input('payments_status'))) {
+                $obj->payments_status = $request->input('payments_status');
+            }
+            if (!empty($request->input('signed_status'))) {
+                $obj->signed_status = $request->input('signed_status');
+            }
+            if (!empty($request->input('school_id'))) {
+                $obj->school_id = $request->input('school_id');
             }
 
             if ($file = $request->file('image')) {

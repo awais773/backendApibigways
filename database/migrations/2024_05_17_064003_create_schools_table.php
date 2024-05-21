@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('drop_latitude')->nullable();
             $table->string('pickup_longitude')->nullable();
             $table->string('pickup_latitude')->nullable();
+            $table->string('amount')->nullable();
             $table->timestamps();
         });
     }
