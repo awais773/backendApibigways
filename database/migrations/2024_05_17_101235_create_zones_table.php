@@ -18,9 +18,12 @@ return new class extends Migration
             $table->string('mid_name')->nullable();
             $table->string('mid_latitude')->nullable();
             $table->string('mid_longitude')->nullable();
-            $table->unsignedBigInteger('pickup_points_id')->nullable();
+            $table->unsignedBigInteger('schools_id')->nullable();
             $table->string('pickup_time')->nullable();
             $table->string('return_time')->nullable();
+            $table->string('zone_pickup_name')->nullable();
+            $table->string('zone_pickup_latitude')->nullable();
+            $table->string('zone_pickup_longitude')->nullable();
             $table->timestamps();
         });
     }

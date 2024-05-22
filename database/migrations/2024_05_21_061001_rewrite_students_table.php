@@ -18,7 +18,11 @@ return new class extends Migration
             $table->string('amount')->nullable();
             $table->enum('payments_status', ['PAID', 'UNPAID'])->default('UNPAID');
             $table->enum('signed_status', ['SIGNED', 'UNSIGNED'])->default('UNSIGNED');
-
+            $table->string('distance')->nullable();
+            $table->string('student_pickup_name')->nullable();
+            $table->string('student_pickup_latidute')->nullable();
+            $table->string('student_pickup_longitude')->nullable();
+            $table->string('type')->nullable();
         });
     }
 
@@ -34,6 +38,11 @@ return new class extends Migration
             $table->dropColumn('amount');
             $table->dropColumn('payments_status');
             $table->dropColumn('signed_status');
+            $table->dropColumn('distance');
+            $table->dropColumn('student_pickup_name');
+            $table->dropColumn('student_pickup_latidute');
+            $table->dropColumn('student_pickup_longitude');
+            $table->dropColumn('type');
         });
     }
 };
