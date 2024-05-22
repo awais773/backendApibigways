@@ -4,6 +4,7 @@ namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Zone;
+use App\Models\ZoneTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -12,64 +13,53 @@ class ZoneController extends Controller
     /**
      * Display a listing of the resource.
      */
-    // public function index()
-    // {
-    //     $zones = Zone::with('pickup_points:id,title,pickup_name,drop_name')->latest()->get();
-
-    //     foreach ($zones as $zone) {
-    //         $zone->vehicles = $zone->vehicles;
-    //     }
-
-    //     return response()->json([
-    //         'success' => true,
-    //         'message' => 'All Data successfully retrieved',
-    //         'data' => $zones,
-    //     ]);
-    // }
     public function index()
     {
-        $zones = Zone::with('schools')
-                     ->with('vehicles')
-                     ->latest()
-                     ->get();
-            $data = $zones->map(function ($zone) {
-                $midpoints = [];
-                if (is_array($zone->mid_name) && is_array($zone->mid_latitude) && is_array($zone->mid_longitude) && is_array($zone->pickup_time) && is_array($zone->return_time)) {
-                    foreach ($zone->mid_name as $index => $midName) {
-                        $midpoints[] = [
-                            'mid_name' => $midName,
-                            'mid_latitude' => $zone->mid_latitude[$index] ?? null,
-                            'mid_longitude' => $zone->mid_longitude[$index] ?? null,
-                        ];
-                        $pickupTime[]= [
-                            'pickup_time' => $zone->pickup_time[$index] ?? null,
-                        ];
-                        $returnTime[] = [
-                            'return_time' => $zone->return_time[$index] ?? null,
-                        ];
-                    }
-                }
-        return [
-            'id' => $zone->id,
-            'name' => $zone->name,
-            'vehicle_id' => $zone->vehicle_id,
-            'midpoints' => $midpoints,
-            'schools_id' => $zone->schools_id,
-            'created_at' => $zone->created_at,
-            'updated_at' => $zone->updated_at,
-            'vehicles' => $zone->vehicles,
-            'schools' => $zone->schools,
-            'return_time' => $returnTime,
-            'pickup_time' => $pickupTime,
-        ];
-    });
+        $zones = Zone::with('schools', 'zonetimes')->latest()->get();
 
-    return response()->json([
-        'success' => true,
-        'message' => 'All Data successfully retrieved',
-        'data' => $data,
-    ]);
-}
+        $data = $zones->map(function ($zone) {
+            $midpoints = [];
+
+            if (is_array($zone->mid_name) && is_array($zone->mid_latitude) && is_array($zone->mid_longitude)) {
+                foreach ($zone->mid_name as $index => $midName) {
+                    $midpoints[] = [
+                        'mid_name' => $midName,
+                        'mid_latitude' => $zone->mid_latitude[$index] ?? null,
+                        'mid_longitude' => $zone->mid_longitude[$index] ?? null,
+                    ];
+                }
+            }
+
+            $zoneTimes = $zone->zonetimes->map(function ($zoneTime) {
+                return [
+                    'vehicle_id' => $zoneTime->vehicle_id,
+                    'vehicles' => $zoneTime->vehicles,
+                    'pickup_time' => $zoneTime->pickup_time,
+                    'return_time' => $zoneTime->return_time,
+                ];
+            });
+
+            return [
+                'id' => $zone->id,
+                'name' => $zone->name,
+                'midpoints' => $midpoints,
+                'schools_id' => $zone->schools_id,
+                'created_at' => $zone->created_at,
+                'updated_at' => $zone->updated_at,
+                'schools' => $zone->schools,
+                'zone_pickup_name' => $zone->zone_pickup_name,
+                'zone_pickup_latitude' => $zone->zone_pickup_latitude,
+                'zone_pickup_longitude' => $zone->zone_pickup_longitude,
+                'zone_times' => $zoneTimes,
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => 'All Data successfully retrieved',
+            'data' => $data,
+        ]);
+    }
 
 
     /**
@@ -87,11 +77,16 @@ class ZoneController extends Controller
                 'errors' => $validator->errors(),
             ], 400);
         }
-        $requestData = $request->only(['name', 'vehicle_id', 'schools_id', 'mid_name','mid_latitude', 'mid_longitude', 'pickup_time', 'return_time']);
-        $data = new Zone();
-        $data->fill($requestData);
-        $data->save();
 
+        $zone = Zone::create($request->only(['name', 'schools_id', 'mid_name','mid_latitude', 'mid_longitude','zone_pickup_name','zone_pickup_latitude','zone_pickup_longitude']));
+
+            $zoneTime = ZoneTime::create([
+                'zone_id' => $zone->id,
+                'vehicle_id' => $request->vehicle_id,
+                'pickup_time' => $request->pickup_time ,
+                'return_time' => $request->return_time,
+            ]);
+            $data = ['zone' => $zone , 'zoneTime' => $zoneTime];
         return response()->json([
             'success' => true,
             'message' => 'Zone created successfully',
@@ -101,29 +96,9 @@ class ZoneController extends Controller
     /**
      * Display the specified resource.
      */
-
-    // public function show(string $id)
-    // {
-    //     $data = Zone::with('pickup_points:id,title,pickup_name,drop_name')->find($id);
-
-    //     if (!$data) {
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'Zone not found',
-    //         ], 404);
-    //     }
-
-    //     $data->vehicles = $data->vehicles;
-
-    //     return response()->json([
-    //         'success' => true,
-    //         'message' => 'Zone retrieved successfully',
-    //         'data' => $data,
-    //     ]);
-    // }
     public function show(string $id)
     {
-        $zone = Zone::with(['pickup_points:id,title,pickup_name,drop_name', 'vehicles'])->find($id);
+        $zone = Zone::with('schools', 'zonetimes')->find($id);
 
         if (!$zone) {
             return response()->json([
@@ -132,38 +107,41 @@ class ZoneController extends Controller
             ], 404);
         }
 
-            $midpoints = [];
-            if (is_array($zone->mid_name) && is_array($zone->mid_latitude) && is_array($zone->mid_longitude) && is_array($zone->pickup_time) && is_array($zone->return_time)) {
-                foreach ($zone->mid_name as $index => $midName) {
-                    $midpoints[] = [
-                        'mid_name' => $midName,
-                        'mid_latitude' => $zone->mid_latitude[$index] ?? null,
-                        'mid_longitude' => $zone->mid_longitude[$index] ?? null,
-                    ];
-                    $pickupTime[]= [
-                        'pickup_time' => $zone->pickup_time[$index] ?? null,
-                    ];
-                    $returnTime[] = [
-                        'return_time' => $zone->return_time[$index] ?? null,
-                    ];
-                }
+        $midpoints = [];
+
+        if (is_array($zone->mid_name) && is_array($zone->mid_latitude) && is_array($zone->mid_longitude)) {
+            foreach ($zone->mid_name as $index => $midName) {
+                $midpoints[] = [
+                    'mid_name' => $midName,
+                    'mid_latitude' => $zone->mid_latitude[$index] ?? null,
+                    'mid_longitude' => $zone->mid_longitude[$index] ?? null,
+                ];
             }
-    $data = [
-        'id' => $zone->id,
-        'name' => $zone->name,
-        'vehicle_id' => $zone->vehicle_id,
-        'midpoints' => $midpoints,
-        'schools_id' => $zone->schools_id,
-        'created_at' => $zone->created_at,
-        'updated_at' => $zone->updated_at,
-        'vehicles' => $zone->vehicles,
-        'schools' => $zone->schools,
-        'return_time' => $returnTime,
-        'pickup_time' => $pickupTime,
-    ];
+        }
+        $zoneTimes = $zone->zonetimes->map(function ($zoneTime) {
+            return [
+                'vehicle_id' => $zoneTime->vehicle_id,
+                'vehicles' => $zoneTime->vehicles,
+                'pickup_time' => $zoneTime->pickup_time,
+                'return_time' => $zoneTime->return_time,
+            ];
+        });
+        $data = [
+            'id' => $zone->id,
+            'name' => $zone->name,
+            'midpoints' => $midpoints,
+            'schools_id' => $zone->schools_id,
+            'created_at' => $zone->created_at,
+            'updated_at' => $zone->updated_at,
+            'schools' => $zone->schools,
+            'zone_pickup_name' => $zone->zone_pickup_name,
+            'zone_pickup_latitude' => $zone->zone_pickup_latitude,
+            'zone_pickup_longitude' => $zone->zone_pickup_longitude,
+            'zone_times' => $zoneTimes,
+        ];
         return response()->json([
             'success' => true,
-            'message' => 'Zone retrieved successfully',
+            'message' => 'Data successfully retrieved',
             'data' => $data,
         ]);
     }
@@ -187,12 +165,6 @@ class ZoneController extends Controller
             if (!empty($request->input('schools_id'))) {
                 $data->schools_id = $request->input('schools_id');
             }
-            if (!empty($request->input('vehicle_id'))) {
-                $vehicleID = $request->input('vehicle_id');
-                if (is_array($vehicleID)) {
-                    $data->vehicle_id = $vehicleID;
-                }
-            }
             if (!empty($request->input('mid_latitude'))) {
                 $midLatitude = $request->input('mid_latitude');
                 if (is_array($midLatitude)) {
@@ -205,36 +177,28 @@ class ZoneController extends Controller
                     $data->mid_longitude = $midLongitude;
                 }
             }
-            if (!empty($request->input('pickup_time'))) {
-                $pickupTimes = $request->input('pickup_time');
-                if (is_array($pickupTimes)) {
-                    $data->pickup_time = $pickupTimes;
-                }
+            if (!empty($request->input('zone_pickup_name'))) {
+                $data->zone_pickup_name = $request->input('zone_pickup_name');
             }
-            if (!empty($request->input('return_time'))) {
-                $returnTimes = $request->input('return_time');
-                if (is_array($returnTimes)) {
-                    $data->return_time = $returnTimes;
-                }
+            if (!empty($request->input('zone_pickup_latitude'))) {
+                $data->zone_pickup_latitude = $request->input('zone_pickup_latitude');
             }
-            // if (!empty($request->input('mid_name'))) {
-            //     $data->mid_name = $request->input('mid_name');
-            // }
-            // if (!empty($request->input('vehicle_id'))) {
-            //     $data->vehicle_id = $request->input('vehicle_id');
-            // }
-            // if (!empty($request->input('mid_latitude'))) {
-            //     $data->mid_latitude = $request->input('mid_latitude');
-            // }
-            // if (!empty($request->input('mid_longitude'))) {
-            //     $data->mid_longitude = $request->input('mid_longitude');
-            // }
-            // if (!empty($request->input('pickup_time'))) {
-            //     $data->pickup_time  = $request->input('pickup_time');
-            // }
-            // if (!empty($request->input('return_time'))) {
-            //     $data->return_time = $request->input('return_time');
-            // }
+            if (!empty($request->input('zone_pickup_longitude'))) {
+                $data->zone_pickup_longitude = $request->input('zone_pickup_longitude');
+            }
+            if (!empty($request->input('vehicle_id'))) {
+                $ZoneTime = ZoneTime::where('zone_id',$data->id)->first();
+                $ZoneTime->vehicle_id = $request->input('vehicle_id');
+             }
+             if (!empty($request->input('pickup_time'))) {
+                $ZoneTime = ZoneTime::where('zone_id',$data->id)->first();
+                $ZoneTime->pickup_time= $request->input('pickup_time');
+             }
+             if (!empty($request->input('return_time'))) {
+                $ZoneTime = ZoneTime::where('zone_id',$data->id)->first();
+                $ZoneTime->return_time = $request->input('return_time');
+             }
+            $ZoneTime->save();
             $data->save();
 
             return response()->json([
@@ -269,4 +233,20 @@ class ZoneController extends Controller
             ]);
         }
     }
+    public function addvehicle(Request $request)
+{
+    if (!empty($request->input('vehicle_id'))) {
+        $data = ZoneTime::create([
+            'zone_id' => $request->zone_id,
+            'vehicle_id' => $request->vehicle_id,
+            'pickup_time' => $request->pickup_time ,
+            'return_time' => $request->return_time,
+        ]);
+    }
+ return response()->json([
+    'success' => true,
+    'message' => 'Vehicle Added.',
+    'data' => $data,
+ ]);
+}
 }

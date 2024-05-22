@@ -137,6 +137,7 @@ Route::post('/zonesStore', [App\Http\Controllers\api\ZoneController::class, 'sto
 Route::get('/zonesShow/{id}', [App\Http\Controllers\api\ZoneController::class, 'show']);
 Route::post('/zonesUpdate/{id}', [App\Http\Controllers\api\ZoneController::class, 'update']);
 Route::delete('/zonesDelete/{id}', [App\Http\Controllers\api\ZoneController::class, 'destroy']);
+Route::post('/addvehicle', [App\Http\Controllers\api\ZoneController::class, 'addvehicle']);
 
 Route::middleware('auth:api')->group( function () {
     // Route::resource('products', ProductController::class);

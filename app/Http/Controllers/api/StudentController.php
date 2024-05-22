@@ -12,24 +12,6 @@ use Illuminate\Support\Facades\Validator;
 
 class StudentController extends Controller
 {
-
-    // public function index()
-    // {
-    //     // $data = Student::where('parent_id', Auth::user()->id)->with('parent')->get();
-    //     $data = Student::where('parent_id', Auth::id())
-    //     ->with(['parent.driver' => function($query) {
-    //         $query->select('drivers.id', 'drivers.mobile');
-    //     }])
-    //     ->get();
-    //     if (is_null($data)) {
-    //         return response()->json('data not found',);
-    //     }
-    //     return response()->json([
-    //         'success' => true,
-    //         'message' => 'All Data susccessfull',
-    //         'data' => $data,
-    //     ]);
-    // }
     public function index()
     {
         $data = Student::where('parent_id', Auth::id())
@@ -203,7 +185,21 @@ class StudentController extends Controller
             if (!empty($request->input('school_id'))) {
                 $obj->school_id = $request->input('school_id');
             }
-
+            if (!empty($request->input('distance'))) {
+                $obj->distance = $request->input('distance');
+            }
+            if (!empty($request->input('student_pickup_name'))) {
+                $obj->student_pickup_name = $request->input('student_pickup_name');
+            }
+            if (!empty($request->input('student_pickup_latidute'))) {
+                $obj->student_pickup_latidute = $request->input('student_pickup_latidute');
+            }
+            if (!empty($request->input('student_pickup_longitude'))) {
+                $obj->student_pickup_longitude = $request->input('student_pickup_longitude');
+            }
+            if (!empty($request->input('type'))) {
+                $obj->type = $request->input('type');
+            }
             if ($file = $request->file('image')) {
                 $video_name = md5(rand(1000, 10000));
                 $ext = strtolower($file->getClientOriginalExtension());
