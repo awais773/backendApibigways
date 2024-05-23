@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\api;
 
+use App\Models\Payment;
+use App\Models\Student;
 use App\Models\Vehicle;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\Student;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -266,7 +267,8 @@ class StudentController extends Controller
 
     public function checkPayment(Request $req,)
     {
-        $id = $req->user()->id;
+        $id = $req->student_id;
+        $userID = $req->user()->id;
         $validator = Validator::make($req->all(), [
             // 'name' => 'required|string|max:255',
         ]);
@@ -275,13 +277,17 @@ class StudentController extends Controller
         }
         // Retrieve the Payment Intent using the provided client_secret
         \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
-        $paymentIntent = \Stripe\PaymentIntent::retrieve($req->client_secret);
+        $paymentIntent = \Stripe\PaymentIntent::retrieve($req->id);
         if ($paymentIntent->status === 'succeeded') {
             // Payment succeeded, update the invoice status
-            //   $payment = User::find($id);
-            //   $payment->primimum = 'primimum';     
-            //   $payment->amount = $req->amount;     
-            //    $payment->save();
+              $payment = Student::find($id);
+              $payment->payments_status = 'PAID';     
+              $payment->save();
+              $Payments = Payment::create([
+                'student_id' => $id,
+                'parent_id' => $userID,
+              ]);
+              $Payments->save();
             return response()->json([
                 'success' => true,
                 'message' => 'Payment Successful',
@@ -296,6 +302,29 @@ class StudentController extends Controller
         }
     }
 
+
+
+    public function PaymentHistroy()
+    {
+        $data = Payment::with('student',)->latest()->get();
+        // foreach ($data as $Driver) {
+        //     $Driver->image = json_decode($Driver->image); // Decode the JSON-encoded location string
+        // }
+        if (is_null($data)) {
+            return response()->json('data not found',);
+        }
+        $data->transform(function ($item) {
+            $item->date = date('Y-m-d', strtotime($item->created_at)); // Extract date
+            $item->time = date('H:i:s', strtotime($item->created_at)); // Extract time from created_at
+            unset($item->created_at);
+            return $item;
+        });
+        return response()->json([
+            'success' => true,
+            'message' => 'All Data susccessfull',
+            'data' => $data,
+        ]);
+    }
 
 
 
