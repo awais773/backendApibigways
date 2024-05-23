@@ -150,5 +150,9 @@ Route::middleware('auth:api')->group( function () {
 
     Route::get('/getAlll',[App\Http\Controllers\api\DriverController::class,'index']);
 
+    /// paymenst
+    Route::post('/stripePost',[App\Http\Controllers\api\StudentController::class,'stripePost']);
+    Route::post('/checkPayment',[App\Http\Controllers\api\StudentController::class,'checkPayment']);
+
 
 });

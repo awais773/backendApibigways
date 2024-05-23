@@ -234,4 +234,73 @@ class StudentController extends Controller
             ]);
         }
     }
+
+
+    public function stripePost(Request $request)
+    {
+        try {
+            // Set Stripe API secret key
+            \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+    
+            $intent = \Stripe\PaymentIntent::create([
+            'amount' => $request->amount,
+            'currency' => 'usd',
+              ]);
+            // Return success response if the charge was successful
+            return response([
+                'success' => true,
+                'message' => 'Payment Successful',
+                'data' => $intent->id,
+                // 'data' => $intent->id
+            ], 201);
+        } catch (\Exception $e) {
+            // Return error response if an exception occurs during payment processing
+            return response([
+                'success' => false,
+                'error' => $e->getMessage()
+            ], 400);
+        }
+    }
+
+
+
+    public function checkPayment(Request $req,)
+    {
+        $id = $req->user()->id;
+        $validator = Validator::make($req->all(), [
+            // 'name' => 'required|string|max:255',
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors());
+        }
+        // Retrieve the Payment Intent using the provided client_secret
+        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+        $paymentIntent = \Stripe\PaymentIntent::retrieve($req->client_secret);
+        if ($paymentIntent->status === 'succeeded') {
+            // Payment succeeded, update the invoice status
+            //   $payment = User::find($id);
+            //   $payment->primimum = 'primimum';     
+            //   $payment->amount = $req->amount;     
+            //    $payment->save();
+            return response()->json([
+                'success' => true,
+                'message' => 'Payment Successful',
+                // 'data' => $payment
+            ], 200);
+        } else {
+            // Payment incomplete or failed, show a message
+            return response()->json([
+                'success' => false,
+                'message' => 'Payment Incomplete'
+            ], 400);
+        }
+    }
+
+
+
+
+
 }
+
+
+
