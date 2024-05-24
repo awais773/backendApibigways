@@ -58,6 +58,8 @@ Route::get('/studentShow/{id}',[App\Http\Controllers\api\StudentController::clas
 Route::delete('/destroyStudent/{id}',[App\Http\Controllers\api\StudentController::class,'destroy']);
 Route::post('/studentadd',[App\Http\Controllers\api\StudentController::class,'store']);
 Route::post('/studentUpdated/{id}',[App\Http\Controllers\api\StudentController::class,'update']);
+
+
 ////  StudentAttendance
 Route::post('/studentAttenStore',[App\Http\Controllers\api\AttendanceController::class,'studentAttenStore']);
 Route::get('/studentAttenShow/{id}',[App\Http\Controllers\api\AttendanceController::class,'studentAttenShow']);
@@ -77,8 +79,10 @@ Route::get('/DriverAttendance/{id}',[App\Http\Controllers\api\AttendanceControll
 Route::get('/DriverAttendance',[App\Http\Controllers\api\AttendanceController::class,'index']);
 ////  DriverAttendance
 Route::group( ['middleware' => ['auth:driver-api'] ],function(){
-    Route::post('DriverAttendance', [App\Http\Controllers\api\AttendanceController::class, 'store']);
+    Route::post('/DriverAttendance', [App\Http\Controllers\api\AttendanceController::class, 'store']);
     Route::post('/driver/PasswordChanged ', [App\Http\Controllers\api\DriverController::class, 'PasswordChanged']);
+    Route::get('/studentPickupList/{id}', [App\Http\Controllers\api\StudentController::class, 'studentPickList']);
+
 });
 
 /// CareTaker

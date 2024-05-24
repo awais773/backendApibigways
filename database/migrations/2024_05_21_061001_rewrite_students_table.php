@@ -17,7 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('school_id')->nullable();
             $table->string('amount')->nullable();
             $table->enum('payments_status', ['PAID', 'UNPAID'])->default('UNPAID');
-            $table->enum('signed_status', ['SIGNED', 'UNSIGNED'])->default('UNSIGNED');
+            $table->enum('signed_status', ['Assigned', 'Unassigned'])->default('Unassigned');
             $table->string('distance')->nullable();
             $table->string('student_pickup_name')->nullable();
             $table->string('student_pickup_latidute')->nullable();
