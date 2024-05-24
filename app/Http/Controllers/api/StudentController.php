@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\api;
 
 use App\Models\Payment;
-use App\Models\Student;
 use App\Models\Vehicle;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -240,9 +239,8 @@ class StudentController extends Controller
     public function studentPickList(Request $request , $id)
     {
         {
-            // $vehicleId = $id;
-            $vehicleId = Auth::guard('driver-api')->$id;
-            dd($vehicleId);
+            $vehicleId = $id;
+            // $vehicleId = Auth::user()->$id;
 
             $driver = Driver::whereHas('vehicle', function ($query) use ($vehicleId) {
                 $query->where('id', $vehicleId);
@@ -255,7 +253,7 @@ class StudentController extends Controller
             ->get();
 
             $data = [
-                'driver' => $driver,
+                'vehicle' => $driver->vehicle,
                 'students' => $students,
             ];
 
