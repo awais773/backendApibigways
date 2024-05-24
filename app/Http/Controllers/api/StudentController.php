@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\api;
 
+use App\Models\Payment;
+use App\Models\Student;
 use App\Models\Vehicle;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -264,4 +266,102 @@ class StudentController extends Controller
     }
 
 }
+
+
+
+    public function stripePost(Request $request)
+    {
+        try {
+            // Set Stripe API secret key
+            \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+    
+            $intent = \Stripe\PaymentIntent::create([
+            'amount' => $request->amount,
+            'currency' => 'usd',
+              ]);
+            // Return success response if the charge was successful
+            return response([
+                'success' => true,
+                'message' => 'Payment Successful',
+                'data' => $intent->id,
+                // 'data' => $intent->id
+            ], 201);
+        } catch (\Exception $e) {
+            // Return error response if an exception occurs during payment processing
+            return response([
+                'success' => false,
+                'error' => $e->getMessage()
+            ], 400);
+        }
+    }
+
+
+
+    public function checkPayment(Request $req,)
+    {
+        $id = $req->student_id;
+        $userID = $req->user()->id;
+        $validator = Validator::make($req->all(), [
+            // 'name' => 'required|string|max:255',
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors());
+        }
+        // Retrieve the Payment Intent using the provided client_secret
+        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+        $paymentIntent = \Stripe\PaymentIntent::retrieve($req->id);
+        if ($paymentIntent->status === 'succeeded') {
+            // Payment succeeded, update the invoice status
+              $payment = Student::find($id);
+              $payment->payments_status = 'PAID';     
+              $payment->save();
+              $Payments = Payment::create([
+                'student_id' => $id,
+                'parent_id' => $userID,
+              ]);
+              $Payments->save();
+            return response()->json([
+                'success' => true,
+                'message' => 'Payment Successful',
+                // 'data' => $payment
+            ], 200);
+        } else {
+            // Payment incomplete or failed, show a message
+            return response()->json([
+                'success' => false,
+                'message' => 'Payment Incomplete'
+            ], 400);
+        }
+    }
+
+
+
+    public function PaymentHistroy()
+    {
+        $data = Payment::with('student',)->latest()->get();
+        // foreach ($data as $Driver) {
+        //     $Driver->image = json_decode($Driver->image); // Decode the JSON-encoded location string
+        // }
+        if (is_null($data)) {
+            return response()->json('data not found',);
+        }
+        $data->transform(function ($item) {
+            $item->date = date('Y-m-d', strtotime($item->created_at)); // Extract date
+            $item->time = date('H:i:s', strtotime($item->created_at)); // Extract time from created_at
+            unset($item->created_at);
+            return $item;
+        });
+        return response()->json([
+            'success' => true,
+            'message' => 'All Data susccessfull',
+            'data' => $data,
+        ]);
+    }
+
+
+
+
 }
+
+
+
