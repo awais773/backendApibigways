@@ -68,7 +68,7 @@ class ExpenseController extends Controller
      */
     public function show($id)
     {
-        $data = Expense::find($id);
+        $data = Expense::with('vehicle', 'driver')->find($id);
         return response()->json([
             'success' => true,
             'message' => 'All Data successful',

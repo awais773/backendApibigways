@@ -17,4 +17,8 @@ class Vehicle extends Model
     {
         return $this->belongsTo(Zone::class);
     }
+    public function student()
+    {
+        return $this->belongsTo(Student::class , 'id');
+    }
 }

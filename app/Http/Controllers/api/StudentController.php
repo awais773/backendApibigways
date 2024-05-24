@@ -7,6 +7,8 @@ use App\Models\Student;
 use App\Models\Vehicle;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Student;
+use App\Models\Driver;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -235,6 +237,36 @@ class StudentController extends Controller
             ]);
         }
     }
+    public function studentPickList(Request $request , $id)
+    {
+        {
+            // $vehicleId = $id;
+            $vehicleId = Auth::guard('driver-api')->$id;
+            dd($vehicleId);
+
+            $driver = Driver::whereHas('vehicle', function ($query) use ($vehicleId) {
+                $query->where('id', $vehicleId);
+            })->with('vehicle')->first();
+
+            $students = Student::whereHas('vehicle', function ($query) use ($vehicleId) {
+                $query->where('id', $vehicleId);
+            })
+            ->with('parent:id,name,phone_number')
+            ->get();
+
+            $data = [
+                'driver' => $driver,
+                'students' => $students,
+            ];
+
+            return response()->json([
+                'success' => true,
+                'data' => $data,
+            ]);
+    }
+
+}
+
 
 
     public function stripePost(Request $request)

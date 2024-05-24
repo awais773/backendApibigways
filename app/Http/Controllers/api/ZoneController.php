@@ -189,13 +189,7 @@ class ZoneController extends Controller
             if (!empty($request->input('vehicle_id'))) {
                 $ZoneTime = ZoneTime::where('zone_id',$data->id)->first();
                 $ZoneTime->vehicle_id = $request->input('vehicle_id');
-             }
-             if (!empty($request->input('pickup_time'))) {
-                $ZoneTime = ZoneTime::where('zone_id',$data->id)->first();
                 $ZoneTime->pickup_time= $request->input('pickup_time');
-             }
-             if (!empty($request->input('return_time'))) {
-                $ZoneTime = ZoneTime::where('zone_id',$data->id)->first();
                 $ZoneTime->return_time = $request->input('return_time');
              }
             $ZoneTime->save();
