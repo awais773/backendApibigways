@@ -143,6 +143,14 @@ Route::post('/zonesUpdate/{id}', [App\Http\Controllers\api\ZoneController::class
 Route::delete('/zonesDelete/{id}', [App\Http\Controllers\api\ZoneController::class, 'destroy']);
 Route::post('/addvehicle', [App\Http\Controllers\api\ZoneController::class, 'addvehicle']);
 
+///Emergency
+// Route::resource('emergency', App\Http\Controllers\api\EmergencyController::class);
+Route::get('/emergency', [App\Http\Controllers\api\EmergencyController::class, 'index']);
+Route::post('/emergencyStore', [App\Http\Controllers\api\EmergencyController::class, 'store']);
+Route::get('/emergencyShow/{id}', [App\Http\Controllers\api\EmergencyController::class, 'show']);
+Route::post('/emergencyUpdate/{id}', [App\Http\Controllers\api\EmergencyController::class, 'update']);
+Route::delete('/emergencyDelete/{id}', [App\Http\Controllers\api\EmergencyController::class, 'destroy']);
+
 Route::middleware('auth:api')->group( function () {
     // Route::resource('products', ProductController::class);
     Route::post('/update/profile', [App\Http\Controllers\api\AuthenticateController::class, 'updateProfile']);
