@@ -142,6 +142,8 @@ Route::get('/zonesShow/{id}', [App\Http\Controllers\api\ZoneController::class, '
 Route::post('/zonesUpdate/{id}', [App\Http\Controllers\api\ZoneController::class, 'update']);
 Route::delete('/zonesDelete/{id}', [App\Http\Controllers\api\ZoneController::class, 'destroy']);
 Route::post('/addvehicle', [App\Http\Controllers\api\ZoneController::class, 'addvehicle']);
+Route::post('/ZoneTimeUpdateVehicle/{id}', [App\Http\Controllers\api\ZoneController::class, 'ZoneTimeUpdateVehicle']);
+Route::delete('/destroyVehicle/{id}', [App\Http\Controllers\api\ZoneController::class, 'destroyVehicle']);
 
 ///Emergency
 // Route::resource('emergency', App\Http\Controllers\api\EmergencyController::class);

@@ -14,6 +14,10 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->string('proof_image')->nullable();
             $table->enum('payments_status', ['PAID', 'UNPAID'])->default('UNPAID');
+            $table->unsignedBigInteger('zone_id')->nullable();
+            $table->string('pickup_time')->nullable();
+            $table->string('dropoff_time')->nullable();
+
         });
     }
 
@@ -25,6 +29,9 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('proof_image');
             $table->dropColumn('payments_status');
+            $table->dropColumn('zone_id');
+            $table->dropColumn('pickup_time');
+            $table->dropColumn('dropoff_time');
         });
     }
 };
