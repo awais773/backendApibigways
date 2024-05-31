@@ -44,4 +44,7 @@ class User extends Authenticatable
     public function vehicle() {
         return $this->hasOne(Vehicle::class, 'id', 'vehicle_id');
     }
+    public function zone() {
+        return $this->hasOne(Zone::class, 'id','zone_id');
+    }
 }

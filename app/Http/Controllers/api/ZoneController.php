@@ -186,18 +186,19 @@ class ZoneController extends Controller
             if (!empty($request->input('zone_pickup_longitude'))) {
                 $data->zone_pickup_longitude = $request->input('zone_pickup_longitude');
             }
-            if (!empty($request->input('vehicle_id'))) {
-                $ZoneTime = ZoneTime::where('zone_id',$data->id)->first();
-                $ZoneTime->vehicle_id = $request->input('vehicle_id');
+            // if (!empty($request->input('vehicle_id'))) {
+            //     $ZoneTime = ZoneTime::where('zone_id',$data->id)->first();
+            //     dd($ZoneTime);
+            //     $ZoneTime->vehicle_id = $request->input('vehicle_id');
 
-                if (!empty($request->input('pickup_time'))) {
-                $ZoneTime->pickup_time= $request->input('pickup_time');
-                }
-                if (!empty($request->input('return_time'))) {
-                $ZoneTime->return_time = $request->input('return_time');
-                }
-             $ZoneTime->save();
-            }
+            //     if (!empty($request->input('pickup_time'))) {
+            //     $ZoneTime->pickup_time= $request->input('pickup_time');
+            //     }
+            //     if (!empty($request->input('return_time'))) {
+            //     $ZoneTime->return_time = $request->input('return_time');
+            //     }
+            //  $ZoneTime->save();
+            // }
             $data->save();
 
             return response()->json([
@@ -233,19 +234,65 @@ class ZoneController extends Controller
         }
     }
     public function addvehicle(Request $request)
-{
-    if (!empty($request->input('vehicle_id'))) {
-        $data = ZoneTime::create([
-            'zone_id' => $request->zone_id,
-            'vehicle_id' => $request->vehicle_id,
-            'pickup_time' => $request->pickup_time ,
-            'return_time' => $request->return_time,
-        ]);
+    {
+        if (!empty($request->input('vehicle_id'))) {
+            $data = ZoneTime::create([
+                'zone_id' => $request->zone_id,
+                'vehicle_id' => $request->vehicle_id,
+                'pickup_time' => $request->pickup_time ,
+                'return_time' => $request->return_time,
+            ]);
+        }
+    return response()->json([
+        'success' => true,
+        'message' => 'Vehicle Added.',
+        'data' => $data,
+    ]);
     }
- return response()->json([
-    'success' => true,
-    'message' => 'Vehicle Added.',
-    'data' => $data,
- ]);
-}
+    public function ZoneTimeUpdateVehicle(Request $request , $id)
+    {
+        $data = ZoneTime::find($id);
+
+        if ($data) {
+            if (!empty($request->input('zone_id'))) {
+                $data->zone_id = $request->input('zone_id');
+            }
+            if (!empty($request->input('vehicle_id'))) {
+                $data->vehicle_id = $request->input('vehicle_id');
+            }
+            if (!empty($request->input('pickup_time'))) {
+                $data->pickup_time = $request->input('pickup_time');
+            }
+            if (!empty($request->input('return_time'))) {
+                $data->return_time = $request->input('return_time');
+            }
+            $data->save();
+            return response()->json([
+                'success' => true,
+                'message' => 'Vehicle is updated successfully',
+                'data' => $data,
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Record not found.',
+            ]);
+        }
+    }
+    public function destroyVehicle(string $id)
+    {
+        $data = ZoneTime::find($id);
+        if (!empty($data)) {
+            $data->delete();
+            return response()->json([
+                'success' => true,
+                'message' => ' delete successfully',
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'something wrong try again ',
+            ]);
+        }
+    }
 }
