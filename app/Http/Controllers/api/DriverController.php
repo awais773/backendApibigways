@@ -226,6 +226,10 @@ class DriverController extends Controller
         if (!$driver) {
             return response()->json(['error' => 'Email not found'], 400);
         }
+        $driver->update([
+         'device_token' => $request->device_token,
+         // 'lan' => $request->language,
+     ]);
 
         // Check if the provided password matches the hashed password
         if ($request->password === $driver->password) {

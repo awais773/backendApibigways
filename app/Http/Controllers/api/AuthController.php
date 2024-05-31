@@ -59,6 +59,11 @@ class AuthController extends Controller
           if(auth()->attempt($data))
           {
              $token = auth()->user()->createToken('Token')->accessToken;
+             $user = User::find(Auth::id());
+             $user->update([
+              'device_token' => $request->device_token,
+              // 'lan' => $request->language,
+          ]);
              return response()->json([
                 'success'=>true,
                 'message'=>'login successfull',
