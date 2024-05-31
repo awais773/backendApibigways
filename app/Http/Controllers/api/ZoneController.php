@@ -298,11 +298,23 @@ class ZoneController extends Controller
     }
     public function ZoneTimeShowVehicle($id)
     {
-        $data = ZoneTime::with('vehicles', 'zones')->find($id);
-            return response()->json([
-                'success' => true,
-                'message' => 'All Data successful',
-                'data' => $data,
-            ]);
+        $data = ZoneTime::with('vehicles')->find($id);
+        $vehicle = $data->vehicles;
+        unset($data->vehicles);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'All Data successful',
+            'data' => [
+                'id' => $data->id,
+                'zone_id' => $data->zone_id,
+                'vehicle_id' => $data->vehicle_id,
+                'pickup_time' => $data->pickup_time,
+                'return_time' => $data->return_time,
+                'created_at' => $data->created_at,
+                'updated_at' => $data->updated_at,
+                'vehicle' => $vehicle
+            ]
+        ]);
     }
 }

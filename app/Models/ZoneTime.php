@@ -18,7 +18,7 @@ class ZoneTime extends Model
     {
         $vehicle = Vehicle::find($this->vehicle_id);
         if ($vehicle) {
-            $vehicles[] = [
+            return [
                 'id' => $vehicle->id,
                 'name' => $vehicle->name,
                 'vehicle_type' => $vehicle->vehicle_type,
@@ -27,10 +27,10 @@ class ZoneTime extends Model
                 'per_km' => $vehicle->per_km,
             ];
         }
-        return $vehicle;
+        return null;
     }
 
     public function zones(){
-        return $this->hasMany(Zone::class, 'id','zone_id');
+        return $this->hasMany(Zone::class, 'zone_id');
     }
 }
