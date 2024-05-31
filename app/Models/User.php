@@ -47,4 +47,7 @@ class User extends Authenticatable
     public function zone() {
         return $this->hasOne(Zone::class, 'id','zone_id');
     }
+    public function school() {
+        return $this->hasOne(School::class, 'id','school_id');
+    }
 }
