@@ -31,6 +31,6 @@ class ZoneTime extends Model
     }
 
     public function zones(){
-        return $this->hasMany(Zone::class, 'zone_id');
+        return $this->hasMany(Zone::class, 'id','zone_id');
     }
 }

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('zone_id')->nullable();
             $table->string('pickup_time')->nullable();
             $table->string('dropoff_time')->nullable();
+            $table->unsignedBigInteger('school_id')->nullable();
 
         });
     }
@@ -32,6 +33,7 @@ return new class extends Migration
             $table->dropColumn('zone_id');
             $table->dropColumn('pickup_time');
             $table->dropColumn('dropoff_time');
+            $table->dropColumn('school_id');
         });
     }
 };

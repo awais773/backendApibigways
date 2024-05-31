@@ -26,7 +26,7 @@ class RegistrationController extends Controller
 
     public function index()
     {
-        $data = User::where('type', 'parents')->with('vehicle:id,name,vehicle_type','zone:id,name')->latest()->get();
+        $data = User::where('type', 'parents')->with('vehicle:id,name,vehicle_type','zone:id,name','school')->latest()->get();
         // foreach ($data as $Driver) {
         //     $Driver->image = json_decode($Driver->image); // Decode the JSON-encoded location string
         // }
@@ -95,7 +95,7 @@ class RegistrationController extends Controller
 
     public function show($id)
     {
-        $data = User::with('vehicle','zone:id,name')->where('id',$id)->get();
+        $data = User::with('vehicle','zone:id,name','school')->where('id',$id)->get();
         // foreach ($data as $Driver) {
         //     $Driver->image = json_decode($Driver->image); // Decode the JSON-encoded location string
         // }
