@@ -54,7 +54,8 @@ Route::get('/notAssign',[App\Http\Controllers\api\VehicleController::class,'notA
 
 // student
 Route::get('/studentGet/{id}',[App\Http\Controllers\api\StudentController::class,'studentGet']);
-Route::get('/studentShow/{id}',[App\Http\Controllers\api\StudentController::class,'show']);
+Route::get('/studentShow/{id}',[App\Http\Controllers\api\StudentController::class,'Studentshow']);
+Route::get('/show/{id}',[App\Http\Controllers\api\StudentController::class,'show']);
 Route::delete('/destroyStudent/{id}',[App\Http\Controllers\api\StudentController::class,'destroy']);
 Route::post('/studentadd',[App\Http\Controllers\api\StudentController::class,'store']);
 Route::post('/studentUpdated/{id}',[App\Http\Controllers\api\StudentController::class,'update']);

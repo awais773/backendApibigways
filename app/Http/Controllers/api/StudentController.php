@@ -61,16 +61,25 @@ class StudentController extends Controller
 
 
 
-    public function show($id)
+    public function Studentshow($id)
     {
         // $data = Student::find($id);
-        $data = Student::with(['vehicle.driver:vehicle_id,mobile'])
+        $data = Student::with('vehicle.driver:vehicle_id,mobile')
         ->latest()->get();
 
         // foreach ($data as $Driver) {
         //     $Driver->image = json_decode($Driver->image); // Decode the JSON-encoded location string
         // }
 
+        return response()->json([
+            'success' => true,
+            'message' => 'All Data successful',
+            'data' => $data,
+        ]);
+    }
+    public function show($id)
+    {
+        $data = Student::with('zone','vehicle.driver')->find($id);
         return response()->json([
             'success' => true,
             'message' => 'All Data successful',
@@ -272,7 +281,7 @@ class StudentController extends Controller
         try {
             // Set Stripe API secret key
             \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
-    
+
             $intent = \Stripe\PaymentIntent::create([
             'amount' => $request->amount,
             'currency' => 'usd',
@@ -311,7 +320,7 @@ class StudentController extends Controller
         if ($paymentIntent->status === 'succeeded') {
             // Payment succeeded, update the invoice status
               $payment = Student::find($id);
-              $payment->payments_status = 'PAID';     
+              $payment->payments_status = 'PAID';
               $payment->save();
               $Payments = Payment::create([
                 'student_id' => $id,
