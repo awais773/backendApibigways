@@ -4,6 +4,7 @@ namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Zone;
+use App\Models\Vehicle;
 use App\Models\ZoneTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -315,6 +316,18 @@ class ZoneController extends Controller
                 'updated_at' => $data->updated_at,
                 'vehicle' => $vehicle
             ]
+        ]);
+    }
+    public function ZoneTimeShowVehiclethroughZone($id)
+    {
+        $zoneTimes = ZoneTime::where('zone_id', $id)->get();
+        $vehicleIds = $zoneTimes->pluck('vehicle_id')->unique();
+        $vehicles = Vehicle::whereIn('id', $vehicleIds)->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'All Data retrieved successfully',
+            'data' => $vehicles,
         ]);
     }
 }
