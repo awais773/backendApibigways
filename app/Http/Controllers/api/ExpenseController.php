@@ -75,7 +75,15 @@ class ExpenseController extends Controller
             'data' => $data,
         ]);
     }
-
+    public function driverExpenseshow($id)
+    {
+        $data = Expense::with('vehicle')->where('driver_id',$id)->get();
+        return response()->json([
+            'success' => true,
+            'message' => 'All Data successful',
+            'data' => $data,
+        ]);
+    }
 
     /**
      * Update the specified resource in storage.

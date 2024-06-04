@@ -146,6 +146,7 @@ Route::post('/addvehicle', [App\Http\Controllers\api\ZoneController::class, 'add
 Route::post('/ZoneTimeUpdateVehicle/{id}', [App\Http\Controllers\api\ZoneController::class, 'ZoneTimeUpdateVehicle']);
 Route::delete('/destroyVehicle/{id}', [App\Http\Controllers\api\ZoneController::class, 'destroyVehicle']);
 Route::get('/ZoneTimeShowVehicle/{id}', [App\Http\Controllers\api\ZoneController::class, 'ZoneTimeShowVehicle']);
+Route::get('/ZoneTimeShowVehiclethroughZone/{id}', [App\Http\Controllers\api\ZoneController::class, 'ZoneTimeShowVehiclethroughZone']);
 
 ///Emergency
 // Route::resource('emergency', App\Http\Controllers\api\EmergencyController::class);
@@ -165,6 +166,7 @@ Route::middleware('auth:api')->group( function () {
     Route::Get('/parentGet',[App\Http\Controllers\api\RegistrationController::class,'parentGet']);
 
     Route::get('/getAlll',[App\Http\Controllers\api\DriverController::class,'index']);
+    Route::get('/driverExpenseshow/{id}', [App\Http\Controllers\api\ExpenseController::class, 'driverExpenseshow']);
 
     /// paymenst
     Route::post('/stripePost',[App\Http\Controllers\api\StudentController::class,'stripePost']);
