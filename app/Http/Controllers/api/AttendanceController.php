@@ -136,6 +136,11 @@ class AttendanceController extends Controller
                 'driver_id' => $request->driver_id,
                 'attendance' => $request->attendance,
             ]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Your attendance has been marked as Present successfully',
+                'data' => $driverAttendance,
+            ], 200);
         }else{
             $driverAttendance = DriverAttendance::where('driver_id', $request->driver_id)
             ->whereDate('created_at', now()->format('Y-m-d'))
@@ -153,12 +158,12 @@ class AttendanceController extends Controller
                 $student->save();
             }
         }
-    }
         return response()->json([
             'success' => true,
-            'message' => 'Driver Create successfull',
+            'message' => 'Your attendance has been marked as Absent successfully',
             'data' => $driverAttendance,
-        ], 200);
+            ], 200);
+    }
     }
 
 
