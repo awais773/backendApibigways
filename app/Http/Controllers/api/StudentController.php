@@ -365,7 +365,7 @@ class StudentController extends Controller
         ]);
     }
 
- public function ManuallyAdd(Request $request){
+ public function ManuallyAdd(Request $req){
     $id = $req->student_id;
     $userID = $req->user()->id;
     $validator = Validator::make($req->all(), [
@@ -377,8 +377,8 @@ class StudentController extends Controller
             $payment = Student::find($id);
             $payment->payments_status = 'PENDING';
             $payment->save();
-            $Payments = Payment::create($request->post());
-            if ($file = $request->file('image')) {
+            $Payments = Payment::create($req->post());
+            if ($file = $req->file('image')) {
                 $video_name = md5(rand(1000, 10000));
                 $ext = strtolower($file->getClientOriginalExtension());
                 $video_full_name = $video_name . '.' . $ext;
