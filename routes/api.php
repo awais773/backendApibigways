@@ -172,7 +172,7 @@ Route::middleware('auth:api')->group( function () {
     Route::post('/stripePost',[App\Http\Controllers\api\StudentController::class,'stripePost']);
     Route::post('/checkPayment',[App\Http\Controllers\api\StudentController::class,'checkPayment']);
     Route::get('/PaymentHistroy',[App\Http\Controllers\api\StudentController::class,'PaymentHistroy']);
-    Route::get('/ManuallyAdd',[App\Http\Controllers\api\StudentController::class,'ManuallyAdd']);
+    Route::post('/ManuallyAdd',[App\Http\Controllers\api\StudentController::class,'ManuallyAdd']);
 
 
 });

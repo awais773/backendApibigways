@@ -345,7 +345,8 @@ class StudentController extends Controller
 
     public function PaymentHistroy()
     {
-        $data = Payment::with('student',)->latest()->get();
+        $userID = $req->user()->id;
+        $data = Payment::with('student',)->where($userID)->latest()->get();
         // foreach ($data as $Driver) {
         //     $Driver->image = json_decode($Driver->image); // Decode the JSON-encoded location string
         // }
@@ -365,44 +366,96 @@ class StudentController extends Controller
         ]);
     }
 
- public function ManuallyAdd(Request $req){
+//  public function ManuallyAdd(Request $req){
+//     $id = $req->student_id;
+//     $userID = $req->user()->id;
+//     $validator = Validator::make($req->all(), [
+//         // 'name' => 'required|string|max:255',
+//     ]);
+//     if ($validator->fails()) {
+//         return response()->json($validator->errors());
+//     }
+//             $payment = Student::find($id);
+//             $payment->payments_status = 'PENDING';
+//             if ($file = $req->file('image')) {
+//                 $video_name = md5(rand(1000, 10000));
+//                 $ext = strtolower($file->getClientOriginalExtension());
+//                 $video_full_name = $video_name . '.' . $ext;
+//                 $upload_path = 'Student/';
+//                 $video_url = $upload_path . $video_full_name;
+//                 $file->move($upload_path, $video_url);
+//                 $payment->payments_image = $video_url;
+//             }
+//             $payment->save();
+//             // $Payments = Payment::create($req->post());
+//             $Payments = Payment::create([
+//                 'student_id' => $id,
+//                 'parent_id' => $userID,
+//               ]);
+//             if ($file = $req->file('image')) {
+//                 $video_name = md5(rand(1000, 10000));
+//                 $ext = strtolower($file->getClientOriginalExtension());
+//                 $video_full_name = $video_name . '.' . $ext;
+//                 $upload_path = 'Payments/';
+//                 $video_url = $upload_path . $video_full_name;
+//                 $file->move($upload_path, $video_url);
+//                 $Payments->image = $video_url;
+//             }
+//             $Payments->save();
+//            return response()->json([
+//             'success' => true,
+//             'message' => 'Payment Successful',
+//             // 'data' => $payment
+//         ], 200);
+//     }
+
+public function ManuallyAdd(Request $req) {
     $id = $req->student_id;
     $userID = $req->user()->id;
+
     $validator = Validator::make($req->all(), [
         // 'name' => 'required|string|max:255',
     ]);
-    if ($validator->fails()) {
+    if ($validator->fails())
+     {
         return response()->json($validator->errors());
     }
-            $payment = Student::find($id);
-            $payment->payments_status = 'PENDING';
-            if ($file = $req->file('image')) {
-                $video_name = md5(rand(1000, 10000));
-                $ext = strtolower($file->getClientOriginalExtension());
-                $video_full_name = $video_name . '.' . $ext;
-                $upload_path = 'Student/';
-                $video_url = $upload_path . $video_full_name;
-                $file->move($upload_path, $video_url);
-                $Payments->payments_image = $video_url;
+    $payment = Student::find($id);
+    $payment->payments_status = 'PENDING';
+    try {
+        if ($file = $req->file('image')) {
+            $video_name = md5(rand(1000, 10000));
+            $ext = strtolower($file->getClientOriginalExtension());
+            $video_full_name = $video_name . '.' . $ext;
+            $upload_path = 'Payments/';
+            $video_url = $upload_path . $video_full_name;
+            if (!file_exists($upload_path)) {
+                mkdir($upload_path, 0777, true);
             }
-            $payment->save();
-            $Payments = Payment::create($req->post());
-            if ($file = $req->file('image')) {
-                $video_name = md5(rand(1000, 10000));
-                $ext = strtolower($file->getClientOriginalExtension());
-                $video_full_name = $video_name . '.' . $ext;
-                $upload_path = 'Payments/';
-                $video_url = $upload_path . $video_full_name;
-                $file->move($upload_path, $video_url);
-                $Payments->image = $video_url;
-            }
-            $Payments->save();
-           return response()->json([
-            'success' => true,
-            'message' => 'Payment Successful',
-            // 'data' => $payment
-        ], 200);
+            $file->move($upload_path, $video_full_name);
+            $payment->payments_image = $video_url;
+        }
+    } catch (FileException $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'File upload error: ' . $e->getMessage(),
+        ], 500);
     }
+    $payment->save();
+
+    $Payments = Payment::create([
+        'student_id' => $id,
+        'parent_id' => $userID,
+    ]);
+    if (!empty($payment->payments_image)) {
+        $Payments->image = $payment->payments_image;
+    }
+    $Payments->save();
+    return response()->json([
+        'success' => true,
+        'message' => 'Payment Successful',
+    ], 200);
+}
 }
 
 
