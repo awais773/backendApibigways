@@ -121,15 +121,44 @@ class AttendanceController extends Controller
                 'message' => 'Email already exist',
 
             ], 400);
-        } {
-            $Driver = DriverAttendance::create($request->post());
-            $Driver->save();
-            return response()->json([
-                'success' => true,
-                'message' => 'Driver Create successfull',
-                'date' => $Driver,
-            ], 200);
         }
+        if($request->attendance == 'Present'){
+            $existingAttendance = DriverAttendance::where('driver_id', $request->driver_id)
+            ->whereDate('created_at', now()->format('Y-m-d'))
+            ->first();
+                if ($existingAttendance) {
+                    return response()->json([
+                    'success' => false,
+                    'message' => 'Driver has already marked their presence today',
+                    ], 400);
+                }
+            $driverAttendance = DriverAttendance::create([
+                'driver_id' => $request->driver_id,
+                'attendance' => $request->attendance,
+            ]);
+        }else{
+            $driverAttendance = DriverAttendance::where('driver_id', $request->driver_id)
+            ->whereDate('created_at', now()->format('Y-m-d'))
+            ->first();
+
+            $driverAttendance->update([
+                'check_out' => $request->check_out,
+            ]);
+        $driver = Driver::find($driverAttendance->driver_id);
+        $students = Student::where('vehicle_id', $driver->vehicle_id)->get();
+        $updateAttendance = $request->attendance_action;
+        foreach ($students as $student) {
+            if (in_array($updateAttendance, ['Absent'])) {
+                $student->attendance_action = $updateAttendance;
+                $student->save();
+            }
+        }
+    }
+        return response()->json([
+            'success' => true,
+            'message' => 'Driver Create successfull',
+            'data' => $driverAttendance,
+        ], 200);
     }
 
 
@@ -311,12 +340,26 @@ class AttendanceController extends Controller
 
             ], 400);
         } {
-            $Student = studentAttendance::create($request->post());
-            $Student->save();
-            return response()->json([
+            $studentAttendance = StudentAttendance::create($request->post());
+            if ($file = $request->file('image')) {
+                $video_name = md5(rand(1000, 10000));
+                $ext = strtolower($file->getClientOriginalExtension());
+                $video_full_name = $video_name . '.' . $ext;
+                $upload_path = 'studentAttendancePicture/';
+                $video_url = $upload_path . $video_full_name;
+                $file->move($upload_path, $video_url);
+                $studentAttendance->image = $video_url;
+            }
+            $studentAttendance->save();
+            $student = Student::find($studentAttendance->student_id);
+            if ($student) {
+                $student->attendance = $studentAttendance->attendance;
+                $student->save();
+            }
+             return response()->json([
                 'success' => true,
-                'message' => 'Student Attendance Create successfull',
-                'date' => $Student,
+                'message' => 'Student marked as Present.',
+                'date' => $studentAttendance,
             ], 200);
         }
     }

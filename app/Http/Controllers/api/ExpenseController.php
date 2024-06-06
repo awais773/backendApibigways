@@ -108,6 +108,9 @@ class ExpenseController extends Controller
                 if (!empty($request->input('driver_id'))) {
                     $data->driver_id = $request->input('driver_id');
                 }
+                if (!empty($request->input('expense_status'))) {
+                    $data->expense_status = $request->input('expense_status');
+                }
                 if ($file = $request->file('image')) {
                     $video_name = md5(rand(1000, 10000));
                     $ext = strtolower($file->getClientOriginalExtension());
