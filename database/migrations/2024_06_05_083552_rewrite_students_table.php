@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::table('students', function (Blueprint $table) {
             $table->enum('attendance_action', ['Absent', 'Present'])->default('Absent');
+            $table->string('payments_image')->nullable()->after('payments_status');
         });
     }
 
@@ -23,6 +24,7 @@ return new class extends Migration
     {
         Schema::table('students', function (Blueprint $table) {
             $table->dropColumn('attendance_action');
+            $table->dropColumn('payments_image');
         });
     }
 };

@@ -376,6 +376,15 @@ class StudentController extends Controller
     }
             $payment = Student::find($id);
             $payment->payments_status = 'PENDING';
+            if ($file = $req->file('image')) {
+                $video_name = md5(rand(1000, 10000));
+                $ext = strtolower($file->getClientOriginalExtension());
+                $video_full_name = $video_name . '.' . $ext;
+                $upload_path = 'Student/';
+                $video_url = $upload_path . $video_full_name;
+                $file->move($upload_path, $video_url);
+                $Payments->payments_image = $video_url;
+            }
             $payment->save();
             $Payments = Payment::create($req->post());
             if ($file = $req->file('image')) {
