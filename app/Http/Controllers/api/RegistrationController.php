@@ -258,6 +258,9 @@ class RegistrationController extends Controller
             if (!empty($request->input('payments_status'))) {
                 $obj->payments_status = $request->input('payments_status');
             }
+            if (!empty($request->input('zone_id'))) {
+                $obj->zone_id = $request->input('zone_id');
+            }
             $obj->save();
         }
         return response()->json([
