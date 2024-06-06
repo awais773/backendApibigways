@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('pickup_time')->nullable();
             $table->string('dropoff_time')->nullable();
             $table->unsignedBigInteger('school_id')->nullable();
-
+            $table->string('request_type');
         });
     }
 
@@ -34,6 +34,7 @@ return new class extends Migration
             $table->dropColumn('pickup_time');
             $table->dropColumn('dropoff_time');
             $table->dropColumn('school_id');
+            $table->dropColumn('request_type');
         });
     }
 };

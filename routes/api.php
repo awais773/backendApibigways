@@ -83,6 +83,7 @@ Route::group( ['middleware' => ['auth:driver-api'] ],function(){
     Route::post('/DriverAttendance', [App\Http\Controllers\api\AttendanceController::class, 'store']);
     Route::post('/driver/PasswordChanged ', [App\Http\Controllers\api\DriverController::class, 'PasswordChanged']);
     Route::get('/studentPickupList/{id}', [App\Http\Controllers\api\StudentController::class, 'studentPickList']);
+    Route::get('/driverExpenseshow/{id}', [App\Http\Controllers\api\ExpenseController::class, 'driverExpenseshow']);
 
 });
 
@@ -166,7 +167,6 @@ Route::middleware('auth:api')->group( function () {
     Route::Get('/parentGet',[App\Http\Controllers\api\RegistrationController::class,'parentGet']);
 
     Route::get('/getAlll',[App\Http\Controllers\api\DriverController::class,'index']);
-    Route::get('/driverExpenseshow/{id}', [App\Http\Controllers\api\ExpenseController::class, 'driverExpenseshow']);
 
     /// paymenst
     Route::post('/stripePost',[App\Http\Controllers\api\StudentController::class,'stripePost']);
