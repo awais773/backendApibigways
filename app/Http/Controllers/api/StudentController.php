@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Student;
 use App\Models\Driver;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -345,8 +346,8 @@ class StudentController extends Controller
 
     public function PaymentHistroy()
     {
-        $userID = $req->user()->id;
-        $data = Payment::with('student',)->where($userID)->latest()->get();
+        $userID = Auth::user()->id;
+        $data = Payment::with('student',)->where($userID,'parent_id')->latest()->get();
         // foreach ($data as $Driver) {
         //     $Driver->image = json_decode($Driver->image); // Decode the JSON-encoded location string
         // }
