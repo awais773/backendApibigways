@@ -365,9 +365,35 @@ class StudentController extends Controller
         ]);
     }
 
-
-
-
+ public function ManuallyAdd(Request $request){
+    $id = $req->student_id;
+    $userID = $req->user()->id;
+    $validator = Validator::make($req->all(), [
+        // 'name' => 'required|string|max:255',
+    ]);
+    if ($validator->fails()) {
+        return response()->json($validator->errors());
+    }
+            $payment = Student::find($id);
+            $payment->payments_status = 'PENDING';
+            $payment->save();
+            $Payments = Payment::create($request->post());
+            if ($file = $request->file('image')) {
+                $video_name = md5(rand(1000, 10000));
+                $ext = strtolower($file->getClientOriginalExtension());
+                $video_full_name = $video_name . '.' . $ext;
+                $upload_path = 'Payments/';
+                $video_url = $upload_path . $video_full_name;
+                $file->move($upload_path, $video_url);
+                $Payments->image = $video_url;
+            }
+            $Payments->save();
+           return response()->json([
+            'success' => true,
+            'message' => 'Payment Successful',
+            // 'data' => $payment
+        ], 200);
+    }
 }
 
 
