@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('payments', function (Blueprint $table) {
-            $table->string('image')->nullable();
+        Schema::create('earnings', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('student_id')->nullable();
             $table->string('amount')->nullable();
+            $table->timestamps();
         });
     }
 
@@ -22,9 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('payments', function (Blueprint $table) {
-            $table->dropColumn('image');
-            $table->dropColumn('amount');
-        });
+        Schema::dropIfExists('earnings');
     }
 };
