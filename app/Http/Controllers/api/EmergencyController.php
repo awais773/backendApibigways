@@ -31,8 +31,8 @@ class EmergencyController extends Controller
     public function store(Request $request)
     {
          $validator = Validator::make($request->all(), [
-            // 'image' => 'required',
-            'message' => 'required|string',
+            'image' => 'required',
+            // 'message' => 'required|string',
          ]);
 
         if ($validator->fails()) {
@@ -51,7 +51,11 @@ class EmergencyController extends Controller
         }
         $Emergency->save();
 
-        return response()->json(['message' => 'Emergency reported successfully'], 200);
+        return response()->json([
+            'success' => true,
+            'message' => 'Emergency reported successfully',
+            'data' => $Emergency,
+        ], 200);
     }
 
     /**

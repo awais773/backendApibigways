@@ -50,6 +50,7 @@ Route::post('/updateStatus/{id}',[App\Http\Controllers\api\RegistrationControlle
 Route::post('/vehicleUpdate/{id}',[App\Http\Controllers\api\VehicleController::class,'update']);
 Route::get('/vehicleIndex/{type}',[App\Http\Controllers\api\VehicleController::class,'vehicleIndex']);
 Route::get('/notAssign',[App\Http\Controllers\api\VehicleController::class,'notAssign']);
+Route::get('/ZoneTime_notAssign',[App\Http\Controllers\api\ZoneController::class,'ZoneTime_notAssign']);
 
 
 // student
@@ -119,6 +120,7 @@ Route::get('/expenseShow/{id}', [App\Http\Controllers\api\ExpenseController::cla
 Route::post('/expenseUpdate/{id}', [App\Http\Controllers\api\ExpenseController::class, 'update']);
 Route::delete('/expenseDelete/{id}', [App\Http\Controllers\api\ExpenseController::class, 'destroy']);
 Route::get('/earningreport', [App\Http\Controllers\api\ExpenseController::class, 'earningReport']);
+Route::get('/Paid_earningReport', [App\Http\Controllers\api\ExpenseController::class, 'Paid_earningReport']);
 
 ///School
 // Route::resource('schools', App\Http\Controllers\api\SchoolController::class);
@@ -163,7 +165,7 @@ Route::middleware('auth:api')->group( function () {
     Route::post('/PasswordChanged ', [App\Http\Controllers\api\AuthenticateController::class, 'PasswordChanged']);
     Route::Get('/bigwaysData',[App\Http\Controllers\api\RegistrationController::class,'reguestedDataGet']);
     Route::apiResource('student', App\Http\Controllers\api\StudentController::class);
-    Route::post('/studentUpdate/{id}',[App\Http\Controllers\api\StudentController::class,'update']);
+    Route::post('/studentUpdated/{id}',[App\Http\Controllers\api\StudentController::class,'update']);
     Route::Get('/parentGet',[App\Http\Controllers\api\RegistrationController::class,'parentGet']);
 
     Route::get('/getAlll',[App\Http\Controllers\api\DriverController::class,'index']);

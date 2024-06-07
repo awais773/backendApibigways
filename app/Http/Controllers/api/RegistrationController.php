@@ -8,6 +8,7 @@ use App\Models\CareTaker;
 use App\Models\Driver;
 use App\Models\Expense;
 use App\Models\Student;
+use App\Models\Earning;
 use App\Models\DriverAttendance;
 use App\Models\StudentAttendance;
 use Carbon\Carbon;
@@ -48,10 +49,10 @@ class RegistrationController extends Controller
 
     public function approved()
     {
-        $data = User::where('type', 'parents')->where('status', 'Approved')->with('vehicle:id,name,vehicle_type')->latest()->get();
-        // foreach ($data as $Driver) {
-        //     $Driver->image = json_decode($Driver->image); // Decode the JSON-encoded location string
-        // }
+        $data = User::where('type', 'parents')->where('status', 'Approved')->with('vehicle:id,name,vehicle_type')
+        ->withCount(['student as pending_request' => function ($query) {
+                    $query->where('payments_status', 'PENDING');
+                }])->latest()->get();
         if (is_null($data)) {
             return response()->json('data not found',);
         }
@@ -325,14 +326,20 @@ class RegistrationController extends Controller
 
         $totalStudentAbsentToday = StudentAttendance::whereDate('created_at', Carbon::today())
                                     ->where('attendance', 'Absent')->count();
-        $currentMonthEarnings = User::where('type', 'parents')->where('status', 'Approved')
-        ->whereYear('created_at', Carbon::now()->year)
-        ->whereMonth('created_at', Carbon::now()->month)
-        ->sum('amount');
+        // $currentMonthEarnings = User::where('type', 'parents')->where('status', 'Approved')
+        // ->whereYear('created_at', Carbon::now()->year)
+        // ->whereMonth('created_at', Carbon::now()->month)
+        // ->sum('amount');
+        $currentMonthEarnings = Earning::whereYear('created_at', Carbon::now()->year)->whereMonth('created_at', Carbon::now()->month)->sum('amount');
+        // $fuelExpense = Expense::where('type', 'fuel')->sum('amount');
+        $fuelExpense = Expense::where('type', 'fuel')->where('expense_status','Approved')->sum('amount');
 
-        $fuelExpense = Expense::where('type', 'fuel')->sum('amount');
-        $othersExpense = Expense::where('type', 'others')->sum('amount');
-        $totalEarning = User::where('type', 'parents')->where('status', 'Approved')->sum('amount');
+        // $othersExpense = Expense::where('type', 'others')->sum('amount');
+        $othersExpense = Expense::where('type', 'others')->where('expense_status','Approved')->sum('amount');
+
+        // $totalEarning = User::where('type', 'parents')->where('status', 'Approved')->sum('amount');
+        $totalEarning = Earning::sum('amount');
+
         $netEarnings = number_format($totalEarning - ($fuelExpense + $othersExpense));
         $totalExpense = $fuelExpense + $othersExpense;
 
@@ -396,9 +403,14 @@ class RegistrationController extends Controller
 }
 public function Earnings(Request $request)
 {
-    $fuelExpense = Expense::where('type', 'fuel')->sum('amount');
-    $othersExpense = Expense::where('type', 'others')->sum('amount');
-    $totalEarning = User::where('type', 'parents')->where('status', 'Approved')->sum('amount');
+    // $fuelExpense = Expense::where('type', 'fuel')->sum('amount');
+    $fuelExpense = Expense::where('type', 'fuel')->where('expense_status','Approved')->sum('amount');
+
+    // $othersExpense = Expense::where('type', 'others')->sum('amount');
+    $othersExpense = Expense::where('type', 'others')->where('expense_status','Approved')->sum('amount');
+
+    // $totalEarning = User::where('type', 'parents')->where('status', 'Approved')->sum('amount');
+    $totalEarning = Earning::sum('amount');
 
     $netEarnings = $totalEarning - ($fuelExpense + $othersExpense);
 

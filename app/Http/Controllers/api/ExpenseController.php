@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Expense;
 use App\Models\User;
 use App\Models\Student;
+use App\Models\Earning;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -17,7 +18,7 @@ class ExpenseController extends Controller
      */
     public function index()
     {
-        $data = Expense::with('vehicle', 'driver')->latest()->get();
+        $data = Expense::where('expense_status','APPROVED')->with('vehicle', 'driver')->latest()->get();
         return response()->json([
             'success' => true,
             'message' => 'All Data successfully',
@@ -155,14 +156,27 @@ class ExpenseController extends Controller
         }
     }
     public function earningReport()
-{
-    $data = User::where('type', 'parents')
-        ->select('id', 'name','total_students','payments_status','proof_image')
-        ->get();
-    return response()->json([
-        'success' => true,
-        'message' => 'Earning report successfully',
-        'data' => $data,
-    ]);
-}
+    {
+        $data = User::where('type', 'parents')
+            ->select('id', 'name','total_students','payments_status','proof_image')
+            ->get();
+        return response()->json([
+            'success' => true,
+            'message' => 'Earning report successfully',
+            'data' => $data,
+        ]);
+    }
+    public function Paid_earningReport()
+    {
+        $data = Earning::whereHas('student', function ($query) {
+                $query->where('payments_status', 'PAID');
+            })
+            ->with('student:id,student_name,payments_status')
+            ->get();
+        return response()->json([
+            'success' => true,
+            'message' => 'Earning report successfully',
+            'data' => $data,
+        ]);
+    }
 }

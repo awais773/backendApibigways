@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Student;
 use App\Models\Driver;
+use App\Models\Earning;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -222,13 +223,20 @@ class StudentController extends Controller
                 $obj->image = $video_url;
             }
             $obj->save();
+            if ($obj->payments_status === 'PAID') {
+                // $earning = Earning::where('student_id', $student->id)->first();
+                     Earning::create([
+                        'student_id' => $obj->id,
+                        'amount' => $obj->amount,
+                    ]);
+             }
         return response()->json([
             'success' => true,
             'message' => 'Student is updated successfully',
             'data' => $obj,
         ]);
     }
-}
+    }
 
     public function destroy($id)
     {
@@ -256,7 +264,7 @@ class StudentController extends Controller
                 $query->where('id', $vehicleId);
             })->with('vehicle')->first();
 
-            $students = Student::whereHas('vehicle', function ($query) use ($vehicleId) {
+            $students = Student::where('payments_status','APPROVED')->whereHas('vehicle', function ($query) use ($vehicleId) {
                 $query->where('id', $vehicleId);
             })
             ->with('parent:id,name,phone_number')
@@ -347,7 +355,7 @@ class StudentController extends Controller
     public function PaymentHistroy()
     {
         $userID = Auth::user()->id;
-        $data = Payment::with('student',)->where($userID,'parent_id')->latest()->get();
+        $data = Payment::with('student')->where('parent_id',$userID)->latest()->get();
         // foreach ($data as $Driver) {
         //     $Driver->image = json_decode($Driver->image); // Decode the JSON-encoded location string
         // }
@@ -366,49 +374,6 @@ class StudentController extends Controller
             'data' => $data,
         ]);
     }
-
-//  public function ManuallyAdd(Request $req){
-//     $id = $req->student_id;
-//     $userID = $req->user()->id;
-//     $validator = Validator::make($req->all(), [
-//         // 'name' => 'required|string|max:255',
-//     ]);
-//     if ($validator->fails()) {
-//         return response()->json($validator->errors());
-//     }
-//             $payment = Student::find($id);
-//             $payment->payments_status = 'PENDING';
-//             if ($file = $req->file('image')) {
-//                 $video_name = md5(rand(1000, 10000));
-//                 $ext = strtolower($file->getClientOriginalExtension());
-//                 $video_full_name = $video_name . '.' . $ext;
-//                 $upload_path = 'Student/';
-//                 $video_url = $upload_path . $video_full_name;
-//                 $file->move($upload_path, $video_url);
-//                 $payment->payments_image = $video_url;
-//             }
-//             $payment->save();
-//             // $Payments = Payment::create($req->post());
-//             $Payments = Payment::create([
-//                 'student_id' => $id,
-//                 'parent_id' => $userID,
-//               ]);
-//             if ($file = $req->file('image')) {
-//                 $video_name = md5(rand(1000, 10000));
-//                 $ext = strtolower($file->getClientOriginalExtension());
-//                 $video_full_name = $video_name . '.' . $ext;
-//                 $upload_path = 'Payments/';
-//                 $video_url = $upload_path . $video_full_name;
-//                 $file->move($upload_path, $video_url);
-//                 $Payments->image = $video_url;
-//             }
-//             $Payments->save();
-//            return response()->json([
-//             'success' => true,
-//             'message' => 'Payment Successful',
-//             // 'data' => $payment
-//         ], 200);
-//     }
 
 public function ManuallyAdd(Request $req) {
     $id = $req->student_id;
