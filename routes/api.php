@@ -163,7 +163,7 @@ Route::middleware('auth:api')->group( function () {
     Route::post('/PasswordChanged ', [App\Http\Controllers\api\AuthenticateController::class, 'PasswordChanged']);
     Route::Get('/bigwaysData',[App\Http\Controllers\api\RegistrationController::class,'reguestedDataGet']);
     Route::apiResource('student', App\Http\Controllers\api\StudentController::class);
-    Route::post('/studentUpdate/{id}',[App\Http\Controllers\api\StudentController::class,'update']);
+    Route::post('/studentUpdated/{id}',[App\Http\Controllers\api\StudentController::class,'update']);
     Route::Get('/parentGet',[App\Http\Controllers\api\RegistrationController::class,'parentGet']);
 
     Route::get('/getAlll',[App\Http\Controllers\api\DriverController::class,'index']);
