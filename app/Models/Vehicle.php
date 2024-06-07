@@ -21,4 +21,8 @@ class Vehicle extends Model
     {
         return $this->belongsTo(Student::class , 'id');
     }
+    public function zoneTimes()
+    {
+        return $this->hasMany(ZoneTime::class, 'vehicle_id');
+    }
 }
