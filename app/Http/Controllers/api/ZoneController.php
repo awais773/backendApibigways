@@ -330,4 +330,17 @@ class ZoneController extends Controller
             'data' => $vehicles,
         ]);
     }
+    public function ZoneTime_notAssign()
+    {
+        $data = Vehicle::whereDoesntHave('zoneTimes')->get(); //DONE: vehicles that are not assigned to any ZoneTime or Zone
+        if ($data->isEmpty()) {
+            return response()->json('No unassigned vehicles found.');
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'All Data successfully',
+            'data' => $data,
+        ]);
+    }
 }
