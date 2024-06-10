@@ -264,7 +264,7 @@ class StudentController extends Controller
                 $query->where('id', $vehicleId);
             })->with('vehicle')->first();
 
-            $students = Student::where('payments_status','APPROVED')->whereHas('vehicle', function ($query) use ($vehicleId) {
+            $students = Student::where('payments_status','PAID')->whereHas('vehicle', function ($query) use ($vehicleId) {
                 $query->where('id', $vehicleId);
             })
             ->with('parent:id,name,phone_number')

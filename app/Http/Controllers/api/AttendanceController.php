@@ -138,8 +138,8 @@ class AttendanceController extends Controller
             ]);
             return response()->json([
                 'success' => true,
-                'message' => 'Your attendance has been marked as Present successfully',
-                'data' => $driverAttendance,
+                'message' => 'Your attendance has been successfully marked as present.',
+                'data' => $driverAttendance->created_at->format('Y-m-d H:i:s'),
             ], 200);
         }else{
             $driverAttendance = DriverAttendance::where('driver_id', $request->driver_id)
@@ -159,9 +159,10 @@ class AttendanceController extends Controller
             }
         }
         return response()->json([
-            'success' => true,
-            'message' => 'Your attendance has been marked as Absent successfully',
-            'data' => $driverAttendance,
+            'success' => false,
+            'message' => 'You have successfully checked out.',
+            'data' => $driverAttendance->updated_at->format('Y-m-d H:i:s'),
+
             ], 200);
     }
     }

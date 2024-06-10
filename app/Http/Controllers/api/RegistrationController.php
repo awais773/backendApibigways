@@ -50,7 +50,7 @@ class RegistrationController extends Controller
     public function approved()
     {
         $data = User::where('type', 'parents')->where('status', 'Approved')->with('vehicle:id,name,vehicle_type')
-        ->withCount(['student as pending_request' => function ($query) {
+        ->withCount(['students as pending_request' => function ($query) {
                     $query->where('payments_status', 'PENDING');
                 }])->latest()->get();
         if (is_null($data)) {
