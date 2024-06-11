@@ -213,6 +213,18 @@ class StudentController extends Controller
             if (!empty($request->input('type'))) {
                 $obj->type = $request->input('type');
             }
+            if (!empty($request->input('national_highway'))) {
+                $obj->national_highway = $request->input('national_highway');
+            }
+            if (!empty($request->input('GT_road_tool_plaza'))) {
+                $obj->GT_road_tool_plaza = $request->input('GT_road_tool_plaza');
+            }
+            if (!empty($request->input('motorway_tool_plaza'))) {
+                $obj->motorway_tool_plaza = $request->input('motorway_tool_plaza');
+            }
+            if (!empty($request->input('other_expense'))) {
+                $obj->other_expense = $request->input('other_expense');
+            }
             if ($file = $request->file('image')) {
                 $video_name = md5(rand(1000, 10000));
                 $ext = strtolower($file->getClientOriginalExtension());
@@ -224,7 +236,6 @@ class StudentController extends Controller
             }
             $obj->save();
             if ($obj->payments_status === 'PAID') {
-                // $earning = Earning::where('student_id', $student->id)->first();
                      Earning::create([
                         'student_id' => $obj->id,
                         'amount' => $obj->amount,
