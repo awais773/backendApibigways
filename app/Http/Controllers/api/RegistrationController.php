@@ -356,9 +356,9 @@ class RegistrationController extends Controller
             'today_students_attendance' => $todayStudentAttendance,
             'total_students_present_today' => $totalStudentPresentToday,
             'total_students_absent_today' => $totalStudentAbsentToday,
-            'total_earning' => $totalEarning,
-            'net_earning' => $netEarnings,
-            'total_expense' => $totalExpense,
+            'total_earning' => number_format($totalEarning),
+            'net_earning' => number_format($netEarnings),
+            'total_expense' => number_format($totalExpense),
             'current_month_earning' => number_format($currentMonthEarnings),
         ];
 
@@ -421,12 +421,12 @@ public function Earnings(Request $request)
     return response()->json([
         'success' => true,
         'data' =>$data = ([
-            'fuel_expense' => $fuelExpense,
+            'fuel_expense' => number_format($fuelExpense),
             'fuel_expense_percentage' => $fuelExpensePercentage,
-            'others_expense' => $othersExpense,
+            'others_expense' => number_format($othersExpense),
             'others_expense_percentage' => $othersExpensePercentage,
-            'earning' => $totalEarning,
-            'net_earning' => $netEarnings,
+            'earning' => number_format($totalEarning),
+            'net_earning' => number_format($netEarnings),
             'earnings_percentage' => $earningsPercentage,
             ])
     ]);
@@ -435,7 +435,8 @@ public function getMonthlyExpenses()
 {
     $monthlyExpenses = DB::table(DB::raw('(SELECT 1 as month UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10 UNION SELECT 11 UNION SELECT 12) as months'))
         ->leftJoin('expenses', function($join) {
-            $join->on(DB::raw('MONTH(expenses.created_at)'), '=', 'months.month');
+            $join->on(DB::raw('MONTH(expenses.created_at)'), '=', 'months.month')
+            ->where('expenses.expense_status', 'Approved');
         })
         ->select(
             'months.month',
@@ -449,14 +450,12 @@ public function getMonthlyExpenses()
 public function getMonthlyEarnings()
 {
     $monthlyEarnings = DB::table(DB::raw('(SELECT 1 as month UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10 UNION SELECT 11 UNION SELECT 12) as months'))
-        ->leftJoin('users', function($join) {
-            $join->on(DB::raw('MONTH(users.created_at)'), '=', 'months.month')
-                ->where('users.type', 'parents')
-                ->where('users.status', 'Approved');
+        ->leftJoin('earnings', function($join) {
+            $join->on(DB::raw('MONTH(earnings.created_at)'), '=', 'months.month');
         })
         ->select(
             'months.month',
-            DB::raw('COALESCE(SUM(users.amount), 0) as monthly_earning')
+            DB::raw('COALESCE(SUM(earnings.amount), 0) as monthly_earning')
         )
         ->groupBy('months.month')
         ->get();
