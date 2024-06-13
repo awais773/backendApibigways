@@ -518,5 +518,67 @@ public function newRegistrationstore(Request $request)
 
     ], 200);
 }
+public function dashboard2()
+{
+    $totalCareTakers = CareTaker::count();
+    $totalVehicles = Vehicle::count();
+    $totalDrivers = Driver::count();
+    $totalStudents = Student::count();
+    $totalParents = User::where('type', 'parents')->where('status', 'Approved')->count();
+    $totalPendingRequests = User::where('type', 'parents')->where('status', 'Pending')->count();
 
+    $todayDriverAttendance = DriverAttendance::whereDate('created_at', Carbon::today())->count();
+
+    $totalDriverPresentToday = DriverAttendance::whereDate('created_at', Carbon::today())
+                                ->where('attendance', 'Present')->count();
+
+    $totalDriverAbsentToday = DriverAttendance::whereDate('created_at', Carbon::today())
+                                ->where('attendance', 'Absent')->count();
+
+    $todayStudentAttendance = StudentAttendance::whereDate('created_at', Carbon::today())->count();
+
+    $totalStudentPresentToday = StudentAttendance::whereDate('created_at', Carbon::today())
+                                ->where('attendance', 'Present')->count();
+
+    $totalStudentAbsentToday = StudentAttendance::whereDate('created_at', Carbon::today())
+                                ->where('attendance', 'Absent')->count();
+    $currentMonthEarnings = User::where('type', 'parents')->where('status', 'Approved')
+    ->whereYear('created_at', Carbon::now()->year)
+    ->whereMonth('created_at', Carbon::now()->month)
+    ->sum('amount');
+    // $fuelExpense = Expense::where('type', 'fuel')->sum('amount');
+    $fuelExpense = Expense::where('type', 'fuel')->where('expense_status','Approved')->sum('amount');
+
+    // $othersExpense = Expense::where('type', 'others')->sum('amount');
+    $othersExpense = Expense::where('type', 'others')->where('expense_status','Approved')->sum('amount');
+
+    $totalEarning = User::where('type', 'parents')->where('status', 'Approved')->sum('amount');
+
+    $netEarnings = number_format($totalEarning - ($fuelExpense + $othersExpense));
+    $totalExpense = $fuelExpense + $othersExpense;
+
+    $data = [
+        'total_careTakers' => $totalCareTakers,
+        'total_vehicles' => $totalVehicles,
+        'total_drivers' => $totalDrivers,
+        'total_students' => $totalStudents,
+        'total_parents' => $totalParents,
+        'total_pending_requests' => $totalPendingRequests,
+        'today_drivers_attendance' => $todayDriverAttendance,
+        'total_drivers_present_today' => $totalDriverPresentToday,
+        'total_drivers_absent_today' => $totalDriverAbsentToday,
+        'today_students_attendance' => $todayStudentAttendance,
+        'total_students_present_today' => $totalStudentPresentToday,
+        'total_students_absent_today' => $totalStudentAbsentToday,
+        'total_earning' => number_format($totalEarning),
+        'net_earning' => number_format($netEarnings),
+        'total_expense' => number_format($totalExpense),
+        'current_month_earning' => number_format($currentMonthEarnings),
+    ];
+
+    return response()->json([
+        'success' => true,
+        'total_counts' => $data,
+    ]);
+}
 }
