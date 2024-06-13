@@ -262,6 +262,27 @@ class RegistrationController extends Controller
             if (!empty($request->input('zone_id'))) {
                 $obj->zone_id = $request->input('zone_id');
             }
+            if (!empty($request->input('pickup_time'))) {
+                $obj->pickup_time = $request->input('pickup_time');
+            }
+            if (!empty($request->input('dropoff_time'))) {
+                $obj->dropoff_time = $request->input('dropoff_time');
+            }
+            if (!empty($request->input('national_highway'))) {
+                $obj->national_highway = $request->input('national_highway');
+            }
+            if (!empty($request->input('GT_road_tool_plaza'))) {
+                $obj->GT_road_tool_plaza = $request->input('GT_road_tool_plaza');
+            }
+            if (!empty($request->input('motorway_tool_plaza'))) {
+                $obj->motorway_tool_plaza = $request->input('motorway_tool_plaza');
+            }
+            if (!empty($request->input('other_expense'))) {
+                $obj->other_expense = $request->input('other_expense');
+            }
+            if (!empty($request->input('net_amount'))) {
+                $obj->net_amount = $request->input('net_amount');
+            }
             $obj->save();
         }
         return response()->json([
@@ -463,5 +484,39 @@ public function getMonthlyEarnings()
     return response()->json($monthlyEarnings);
 }
 
+public function newRegistrationstore(Request $request)
+{
+    $validator = Validator::make($request->all(), [
+        'phone_number' => 'unique:users',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json([
+            'success' => false,
+            // 'message' => $validator->errors()->toJson()
+            'message' => 'Phone Number already exist',
+
+        ], 400);
+    }
+    $pass = $request->input('phone_number');;
+    $passwordHash = Hash::make($pass);
+    $requestData = $request->post();
+    $requestData['password'] = $passwordHash;
+    $user = User::create($requestData);
+    $user->save();
+    $token = $user->createToken('Token')->accessToken;
+    if (!$user) {
+        return response()->json(['success' => false, 'message' => 'somthin Wrong',], 422);
+    }
+    return response()->json([
+        'success' => true,
+        'message' => 'register successfull',
+        'data' => $data = ([
+            'token' => $token,
+            'user' => $user
+        ])
+
+    ], 200);
+}
 
 }

@@ -36,6 +36,7 @@ Route::get('/realtime-location', [App\Http\Controllers\api\VehicleController::cl
 
 //registration
 Route::apiResource('registration', App\Http\Controllers\api\RegistrationController::class);
+Route::post('/newRegistrationstore',[App\Http\Controllers\api\RegistrationController::class,'newRegistrationstore']);
 Route::post('/registrationUpdate/{id}',[App\Http\Controllers\api\RegistrationController::class,'update']);
 Route::post('/updateReguest/{id}',[App\Http\Controllers\api\RegistrationController::class,'updateReguest']);
 Route::get('/approved',[App\Http\Controllers\api\RegistrationController::class,'approved']);
