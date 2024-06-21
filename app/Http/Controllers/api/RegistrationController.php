@@ -262,6 +262,27 @@ class RegistrationController extends Controller
             if (!empty($request->input('zone_id'))) {
                 $obj->zone_id = $request->input('zone_id');
             }
+            if (!empty($request->input('pickup_time'))) {
+                $obj->pickup_time = $request->input('pickup_time');
+            }
+            if (!empty($request->input('dropoff_time'))) {
+                $obj->dropoff_time = $request->input('dropoff_time');
+            }
+            if (!empty($request->input('national_highway'))) {
+                $obj->national_highway = $request->input('national_highway');
+            }
+            if (!empty($request->input('GT_road_tool_plaza'))) {
+                $obj->GT_road_tool_plaza = $request->input('GT_road_tool_plaza');
+            }
+            if (!empty($request->input('motorway_tool_plaza'))) {
+                $obj->motorway_tool_plaza = $request->input('motorway_tool_plaza');
+            }
+            if (!empty($request->input('other_expense'))) {
+                $obj->other_expense = $request->input('other_expense');
+            }
+            if (!empty($request->input('net_amount'))) {
+                $obj->net_amount = $request->input('net_amount');
+            }
             $obj->save();
         }
         return response()->json([
@@ -463,5 +484,101 @@ public function getMonthlyEarnings()
     return response()->json($monthlyEarnings);
 }
 
+public function newRegistrationstore(Request $request)
+{
+    $validator = Validator::make($request->all(), [
+        'phone_number' => 'unique:users',
+    ]);
 
+    if ($validator->fails()) {
+        return response()->json([
+            'success' => false,
+            // 'message' => $validator->errors()->toJson()
+            'message' => 'Phone Number already exist',
+
+        ], 400);
+    }
+    $pass = $request->input('phone_number');;
+    $passwordHash = Hash::make($pass);
+    $requestData = $request->post();
+    $requestData['password'] = $passwordHash;
+    $user = User::create($requestData);
+    $user->save();
+    $token = $user->createToken('Token')->accessToken;
+    if (!$user) {
+        return response()->json(['success' => false, 'message' => 'somthin Wrong',], 422);
+    }
+    return response()->json([
+        'success' => true,
+        'message' => 'register successfull',
+        'data' => $data = ([
+            'token' => $token,
+            'user' => $user
+        ])
+
+    ], 200);
+}
+public function dashboard2()
+{
+    $totalCareTakers = CareTaker::count();
+    $totalVehicles = Vehicle::count();
+    $totalDrivers = Driver::count();
+    $totalStudents = Student::count();
+    $totalParents = User::where('type', 'parents')->where('status', 'Approved')->count();
+    $totalPendingRequests = User::where('type', 'parents')->where('status', 'Pending')->count();
+
+    $todayDriverAttendance = DriverAttendance::whereDate('created_at', Carbon::today())->count();
+
+    $totalDriverPresentToday = DriverAttendance::whereDate('created_at', Carbon::today())
+                                ->where('attendance', 'Present')->count();
+
+    $totalDriverAbsentToday = DriverAttendance::whereDate('created_at', Carbon::today())
+                                ->where('attendance', 'Absent')->count();
+
+    $todayStudentAttendance = StudentAttendance::whereDate('created_at', Carbon::today())->count();
+
+    $totalStudentPresentToday = StudentAttendance::whereDate('created_at', Carbon::today())
+                                ->where('attendance', 'Present')->count();
+
+    $totalStudentAbsentToday = StudentAttendance::whereDate('created_at', Carbon::today())
+                                ->where('attendance', 'Absent')->count();
+    $currentMonthEarnings = User::where('type', 'parents')->where('status', 'Approved')
+    ->whereYear('created_at', Carbon::now()->year)
+    ->whereMonth('created_at', Carbon::now()->month)
+    ->sum('amount');
+    // $fuelExpense = Expense::where('type', 'fuel')->sum('amount');
+    $fuelExpense = Expense::where('type', 'fuel')->where('expense_status','Approved')->sum('amount');
+
+    // $othersExpense = Expense::where('type', 'others')->sum('amount');
+    $othersExpense = Expense::where('type', 'others')->where('expense_status','Approved')->sum('amount');
+
+    $totalEarning = User::where('type', 'parents')->where('status', 'Approved')->sum('amount');
+
+    $netEarnings = number_format($totalEarning - ($fuelExpense + $othersExpense));
+    $totalExpense = $fuelExpense + $othersExpense;
+
+    $data = [
+        'total_careTakers' => $totalCareTakers,
+        'total_vehicles' => $totalVehicles,
+        'total_drivers' => $totalDrivers,
+        'total_students' => $totalStudents,
+        'total_parents' => $totalParents,
+        'total_pending_requests' => $totalPendingRequests,
+        'today_drivers_attendance' => $todayDriverAttendance,
+        'total_drivers_present_today' => $totalDriverPresentToday,
+        'total_drivers_absent_today' => $totalDriverAbsentToday,
+        'today_students_attendance' => $todayStudentAttendance,
+        'total_students_present_today' => $totalStudentPresentToday,
+        'total_students_absent_today' => $totalStudentAbsentToday,
+        'total_earning' => number_format($totalEarning),
+        'net_earning' => number_format($netEarnings),
+        'total_expense' => number_format($totalExpense),
+        'current_month_earning' => number_format($currentMonthEarnings),
+    ];
+
+    return response()->json([
+        'success' => true,
+        'total_counts' => $data,
+    ]);
+}
 }

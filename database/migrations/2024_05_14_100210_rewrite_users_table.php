@@ -19,6 +19,11 @@ return new class extends Migration
             $table->string('dropoff_time')->nullable();
             $table->unsignedBigInteger('school_id')->nullable();
             $table->string('request_type');
+            $table->string('other_expense')->nullable();
+            $table->string('motorway_tool_plaza')->nullable();
+            $table->string('GT_road_tool_plaza')->nullable();
+            $table->string('national_highway')->nullable();
+            $table->string('net_amount')->nullable();
         });
     }
 
@@ -35,6 +40,11 @@ return new class extends Migration
             $table->dropColumn('dropoff_time');
             $table->dropColumn('school_id');
             $table->dropColumn('request_type');
+            $table->dropColumn('other_expense');
+            $table->dropColumn('motorway_tool_plaza');
+            $table->dropColumn('GT_road_tool_plaza');
+            $table->dropColumn('national_highway');
+            $table->dropColumn('net_amount');
         });
     }
 };
