@@ -520,7 +520,6 @@ public function newRegistrationstore(Request $request)
 }
 public function dashboard2()
 {
-    $totalCareTakers = CareTaker::count();
     $totalVehicles = Vehicle::count();
     $totalDrivers = Driver::count();
     $totalStudents = Student::count();
@@ -546,10 +545,8 @@ public function dashboard2()
     ->whereYear('created_at', Carbon::now()->year)
     ->whereMonth('created_at', Carbon::now()->month)
     ->sum('amount');
-    // $fuelExpense = Expense::where('type', 'fuel')->sum('amount');
     $fuelExpense = Expense::where('type', 'fuel')->where('expense_status','Approved')->sum('amount');
 
-    // $othersExpense = Expense::where('type', 'others')->sum('amount');
     $othersExpense = Expense::where('type', 'others')->where('expense_status','Approved')->sum('amount');
 
     $totalEarning = User::where('type', 'parents')->where('status', 'Approved')->sum('amount');
@@ -581,4 +578,20 @@ public function dashboard2()
         'total_counts' => $data,
     ]);
 }
+    public function getMonthlyEarnings2()
+    {
+        $monthlyEarnings = DB::table(DB::raw('(SELECT 1 as month UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10 UNION SELECT 11 UNION SELECT 12) as months'))
+            ->leftJoin('users', function($join) {
+                $join->on(DB::raw('MONTH(users.created_at)'), '=', 'months.month')
+                    ->where('users.type', 'parents')
+                    ->where('users.status', 'Approved');
+                })
+                ->select(
+                    'months.month',
+                    DB::raw('COALESCE(SUM(users.amount), 0) as monthly_earning')
+                    )
+                    ->groupBy('months.month')
+                    ->get();
+                    return response()->json($monthlyEarnings);
+    }
 }

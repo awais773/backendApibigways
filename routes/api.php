@@ -113,6 +113,7 @@ Route::get('/MonthlyApprovedRequest', [App\Http\Controllers\api\RegistrationCont
 Route::get('/earnings', [App\Http\Controllers\api\RegistrationController::class, 'Earnings']);
 Route::get('/getMonthlyExpenses', [App\Http\Controllers\api\RegistrationController::class, 'getMonthlyExpenses']);
 Route::get('/getMonthlyEarnings', [App\Http\Controllers\api\RegistrationController::class, 'getMonthlyEarnings']);
+Route::get('/getMonthlyEarnings2', [App\Http\Controllers\api\RegistrationController::class, 'getMonthlyEarnings2']);
 
 ///Expense
 // Route::apiResource('expense', App\Http\Controllers\api\ExpenseController::class);
