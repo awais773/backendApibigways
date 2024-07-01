@@ -88,12 +88,6 @@ class SchoolController extends Controller
             if (!empty($request->input('drop_latitude'))) {
                 $data->drop_latitude = $request->input('drop_latitude');
             }
-            if (!empty($request->input('pickup_longitude'))) {
-                $data->pickup_longitude = $request->input('pickup_longitude');
-            }
-            if (!empty($request->input('pickup_latitude'))) {
-                $data->pickup_latitude = $request->input('pickup_latitude');
-            }
             if (!empty($request->input('amount'))) {
                 $data->amount = $request->input('amount');
             }

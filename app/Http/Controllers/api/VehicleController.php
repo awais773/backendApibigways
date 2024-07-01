@@ -8,7 +8,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use App\Models\User;
 
 class VehicleController extends Controller
 {
@@ -20,7 +19,7 @@ class VehicleController extends Controller
         //     $Driver->image = json_decode($Driver->image); // Decode the JSON-encoded location string
         // }
         if (is_null($data)) {
-            return response()->json('data not found',);
+            return response()->json('data not found');
         }
         return response()->json([
             'success' => true,
@@ -31,7 +30,7 @@ class VehicleController extends Controller
 
     public function vehicleIndex($type)
     {
-        $data = Vehicle::where('vehicle_type', $type)->latest()->get();
+        $data = Vehicle::where('vehicle_type', $type)->get();
         // foreach ($data as $Driver) {
         //     $Driver->image = json_decode($Driver->image); // Decode the JSON-encoded location string
         // }
@@ -50,7 +49,6 @@ class VehicleController extends Controller
     public function show($id)
     {
         $data = Vehicle::find($id);
-
         // foreach ($data as $Driver) {
         //     $Driver->image = json_decode($Driver->image); // Decode the JSON-encoded location string
         // }
@@ -98,17 +96,17 @@ class VehicleController extends Controller
             ], 400);
         } {
             $vehicles = Vehicle::create($request->post());
-            if ($files = $request->file('image')) { // Assuming 'vehicle_images' is the input name for multiple files
-                $imageUrls = []; // Initialize an array to store the image URLs
-                foreach ($files as $file) {
-                    $image_name = md5(rand(1000, 10000)) . '.' . $file->getClientOriginalExtension();
-                    $upload_path = 'vehicleImage/';
-                    $image_url = $upload_path . $image_name;
-                    $file->move($upload_path, $image_name);
-                    $imageUrls[] = $image_url; // Store the image URL in the array
-                }
-                $vehicles->image = $imageUrls; // Store the array of image URLs in the driver object
-            }
+            // if ($files = $request->file('image')) { // Assuming 'vehicle_images' is the input name for multiple files
+            //     $imageUrls = []; // Initialize an array to store the image URLs
+            //     foreach ($files as $file) {
+            //         $image_name = md5(rand(1000, 10000)) . '.' . $file->getClientOriginalExtension();
+            //         $upload_path = 'vehicleImage/';
+            //         $image_url = $upload_path . $image_name;
+            //         $file->move($upload_path, $image_name);
+            //         $imageUrls[] = $image_url; // Store the image URL in the array
+            //     }
+            //     $vehicles->image = $imageUrls; // Store the array of image URLs in the driver object
+            // }
             $vehicles->save();
             return response()->json([
                 'success' => true,

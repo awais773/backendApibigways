@@ -188,19 +188,6 @@ class ZoneController extends Controller
             if (!empty($request->input('zone_pickup_longitude'))) {
                 $data->zone_pickup_longitude = $request->input('zone_pickup_longitude');
             }
-            // if (!empty($request->input('vehicle_id'))) {
-            //     $ZoneTime = ZoneTime::where('zone_id',$data->id)->first();
-            //     dd($ZoneTime);
-            //     $ZoneTime->vehicle_id = $request->input('vehicle_id');
-
-            //     if (!empty($request->input('pickup_time'))) {
-            //     $ZoneTime->pickup_time= $request->input('pickup_time');
-            //     }
-            //     if (!empty($request->input('return_time'))) {
-            //     $ZoneTime->return_time = $request->input('return_time');
-            //     }
-            //  $ZoneTime->save();
-            // }
             $data->save();
 
             return response()->json([

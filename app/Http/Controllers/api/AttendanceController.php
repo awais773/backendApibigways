@@ -99,7 +99,6 @@ class AttendanceController extends Controller
 
         return $item;
     });
-    return $data;
     return response()->json([
         'success' => true,
         'message' => 'All Data successful',
@@ -191,7 +190,7 @@ class AttendanceController extends Controller
         $data = CareTakerAttendance::with('careTaker:id,name')->select(
             'careTaker_id',
             DB::raw('SUM(CASE WHEN attendance = "Present" THEN 1 ELSE 0 END) as total_present'),
-            DB::raw('SUM(CASE WHEN attendance = "Absent" THEN 1 ELSE 0 END) as total_absent'),
+            DB::raw('SUM(CASE WHEN attendance = "Absent" THEN 1 ELSE 0 END) as total_absent')
         )
             ->groupBy('careTaker_id')
             ->get();
@@ -266,7 +265,7 @@ class AttendanceController extends Controller
         $data = StudentAttendance::with('student:id,student_name')->select(
             'student_id' ,
             DB::raw('SUM(CASE WHEN attendance = "Present" THEN 1 ELSE 0 END) as total_present'),
-            DB::raw('SUM(CASE WHEN attendance = "Absent" THEN 1 ELSE 0 END) as total_absent'),
+            DB::raw('SUM(CASE WHEN attendance = "Absent" THEN 1 ELSE 0 END) as total_absent')
         )
             ->groupBy('student_id')
             ->get();
@@ -299,8 +298,8 @@ class AttendanceController extends Controller
         }
 
         $query = StudentAttendance::with('student:id,student_name','vehicle:id,name,vehicle_number')
-        ->where('student_id', $id)
-        ->whereBetween('created_at', [$startDate, $endDate]);
+        ->where('student_id', $id);
+        // ->whereBetween('created_at', [$startDate, $endDate]);
 
     if ($search) {
         $query->where(function ($q) use ($search) {
@@ -318,7 +317,7 @@ class AttendanceController extends Controller
               });
         });
     }
-        $data = $query->latest()->paginate(10);
+        $data = $query->get();
         $data->transform(function ($item) {
             $item->date = date('Y-m-d', strtotime($item->created_at)); // Extract date
             $item->time = date('H:i:s', strtotime($item->created_at)); // Extract time
@@ -359,13 +358,13 @@ class AttendanceController extends Controller
             $studentAttendance->save();
             $student = Student::find($studentAttendance->student_id);
             if ($student) {
-                $student->attendance = $studentAttendance->attendance;
+                $student->attendance_action = $studentAttendance->attendance;
                 $student->save();
             }
              return response()->json([
                 'success' => true,
                 'message' => 'Student marked as Present.',
-                'date' => $studentAttendance,
+                'data' => $studentAttendance,
             ], 200);
         }
     }

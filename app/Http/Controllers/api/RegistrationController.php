@@ -32,7 +32,7 @@ class RegistrationController extends Controller
         //     $Driver->image = json_decode($Driver->image); // Decode the JSON-encoded location string
         // }
         if (is_null($data)) {
-            return response()->json('data not found',);
+            return response()->json('data not found.');
         }
         $data->transform(function ($item) {
             $item->date = date('Y-m-d', strtotime($item->created_at)); // Extract date
@@ -53,8 +53,12 @@ class RegistrationController extends Controller
         ->withCount(['students as pending_request' => function ($query) {
                     $query->where('payments_status', 'PENDING');
                 }])->latest()->get();
+
+        // foreach ($data as $Driver) {
+        //     $Driver->image = json_decode($Driver->image); // Decode the JSON-encoded location string
+        // }
         if (is_null($data)) {
-            return response()->json('data not found',);
+            return response()->json('data not found');
         }
         return response()->json([
             'success' => true,
@@ -70,7 +74,7 @@ class RegistrationController extends Controller
         //     $Driver->image = json_decode($Driver->image); // Decode the JSON-encoded location string
         // }
         if (is_null($data)) {
-            return response()->json('data not found',);
+            return response()->json('data not found');
         }
         return response()->json([
             'success' => true,
@@ -83,7 +87,7 @@ class RegistrationController extends Controller
     {
         $data = User::where( Auth::user()->id, 'id')->with('vehicle')->latest()->get();
         if (is_null($data)) {
-            return response()->json('data not found',);
+            return response()->json('data not found');
         }
         return response()->json([
             'success' => true,
@@ -108,7 +112,6 @@ class RegistrationController extends Controller
         ]);
     }
 
-
     public function paymentsDetails($id)
     {
         $data = User::with('vehicle')->where('id',$id)->get();
@@ -122,8 +125,6 @@ class RegistrationController extends Controller
             'data' => $data,
         ]);
     }
-
-
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -139,7 +140,8 @@ class RegistrationController extends Controller
 
             ], 400);
         }
-        $pass  = 12345678;
+        // $pass  = 12345678;
+        $pass  = $request->phone_number;
         $passwordHash = Hash::make($pass);
         $requestData = $request->post();
         $requestData['password'] = $passwordHash;
@@ -251,7 +253,7 @@ class RegistrationController extends Controller
             }
 
             if (!empty($request->input('vehicle_id'))) {
-                $obj->vehicle_id = $request->input('vehicle_id');
+                $obj->vehicle_id = $request->input('vehicle_id') ?: null;
             }
             if (!empty($request->input('email'))) {
                 $obj->email = $request->input('email');
@@ -347,21 +349,12 @@ class RegistrationController extends Controller
 
         $totalStudentAbsentToday = StudentAttendance::whereDate('created_at', Carbon::today())
                                     ->where('attendance', 'Absent')->count();
-        // $currentMonthEarnings = User::where('type', 'parents')->where('status', 'Approved')
-        // ->whereYear('created_at', Carbon::now()->year)
-        // ->whereMonth('created_at', Carbon::now()->month)
-        // ->sum('amount');
         $currentMonthEarnings = Earning::whereYear('created_at', Carbon::now()->year)->whereMonth('created_at', Carbon::now()->month)->sum('amount');
-        // $fuelExpense = Expense::where('type', 'fuel')->sum('amount');
         $fuelExpense = Expense::where('type', 'fuel')->where('expense_status','Approved')->sum('amount');
 
-        // $othersExpense = Expense::where('type', 'others')->sum('amount');
         $othersExpense = Expense::where('type', 'others')->where('expense_status','Approved')->sum('amount');
-
-        // $totalEarning = User::where('type', 'parents')->where('status', 'Approved')->sum('amount');
         $totalEarning = Earning::sum('amount');
-
-        $netEarnings = number_format($totalEarning - ($fuelExpense + $othersExpense));
+       $netEarnings = $totalEarning - ($fuelExpense + $othersExpense);
         $totalExpense = $fuelExpense + $othersExpense;
 
         $data = [
@@ -424,20 +417,16 @@ class RegistrationController extends Controller
 }
 public function Earnings(Request $request)
 {
-    // $fuelExpense = Expense::where('type', 'fuel')->sum('amount');
     $fuelExpense = Expense::where('type', 'fuel')->where('expense_status','Approved')->sum('amount');
-
-    // $othersExpense = Expense::where('type', 'others')->sum('amount');
     $othersExpense = Expense::where('type', 'others')->where('expense_status','Approved')->sum('amount');
-
-    // $totalEarning = User::where('type', 'parents')->where('status', 'Approved')->sum('amount');
     $totalEarning = Earning::sum('amount');
 
     $netEarnings = $totalEarning - ($fuelExpense + $othersExpense);
 
-    $fuelExpensePercentage = number_format(($fuelExpense / ($fuelExpense + $othersExpense)) * 100);
-    $othersExpensePercentage = number_format(($othersExpense / ($fuelExpense + $othersExpense)) * 100);
-    $earningsPercentage = number_format(($netEarnings / $totalEarning) * 100);
+    $fuelExpensePercentage = (($fuelExpense / ($fuelExpense + $othersExpense)) * 100);
+    $othersExpensePercentage = (($othersExpense / ($fuelExpense + $othersExpense)) * 100);
+    $earningsPercentage = (($netEarnings / $totalEarning) * 100);
+    $netEarningsPercentage = (($netEarnings / $totalEarning) * 100);
 
     return response()->json([
         'success' => true,
@@ -449,6 +438,7 @@ public function Earnings(Request $request)
             'earning' => number_format($totalEarning),
             'net_earning' => number_format($netEarnings),
             'earnings_percentage' => $earningsPercentage,
+            'net_earning_percentage' => $netEarningsPercentage,
             ])
     ]);
 }
@@ -545,17 +535,18 @@ public function dashboard2()
     ->whereYear('created_at', Carbon::now()->year)
     ->whereMonth('created_at', Carbon::now()->month)
     ->sum('amount');
+    // $fuelExpense = Expense::where('type', 'fuel')->sum('amount');
     $fuelExpense = Expense::where('type', 'fuel')->where('expense_status','Approved')->sum('amount');
 
+    // $othersExpense = Expense::where('type', 'others')->sum('amount');
     $othersExpense = Expense::where('type', 'others')->where('expense_status','Approved')->sum('amount');
 
     $totalEarning = User::where('type', 'parents')->where('status', 'Approved')->sum('amount');
 
-    $netEarnings = number_format($totalEarning - ($fuelExpense + $othersExpense));
+    $netEarnings = ($totalEarning - ($fuelExpense + $othersExpense));
     $totalExpense = $fuelExpense + $othersExpense;
 
     $data = [
-        'total_careTakers' => $totalCareTakers,
         'total_vehicles' => $totalVehicles,
         'total_drivers' => $totalDrivers,
         'total_students' => $totalStudents,

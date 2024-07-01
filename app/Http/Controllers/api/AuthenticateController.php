@@ -100,7 +100,7 @@ class AuthenticateController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'data not found'
-            ],);
+            ]);
         }
         return response()->json([
             'success' => true,

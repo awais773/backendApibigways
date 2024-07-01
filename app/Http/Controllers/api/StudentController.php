@@ -5,11 +5,11 @@ namespace App\Http\Controllers\api;
 use App\Models\Payment;
 use App\Models\Vehicle;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use App\Http\Controllers\Controller;
 use App\Models\Student;
 use App\Models\Driver;
 use App\Models\Earning;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -19,7 +19,7 @@ class StudentController extends Controller
     public function index()
     {
         $data = Student::where('parent_id', Auth::id())
-            ->with(['vehicle.driver:vehicle_id,mobile'])
+            ->with(['vehicle.driver:vehicle_id,name,email,mobile,profile_picture'])
             ->latest()->get();
 
         if ($data->isEmpty()) {
@@ -36,7 +36,7 @@ class StudentController extends Controller
     {
         $data = Student::where('parent_id', $id)->get();
         if (is_null($data)) {
-            return response()->json('data not found',);
+            return response()->json('data not found');
         }
         return response()->json([
             'success' => true,
@@ -52,7 +52,7 @@ class StudentController extends Controller
         //     $Driver->image = json_decode($Driver->image); // Decode the JSON-encoded location string
         // }
         if (is_null($data)) {
-            return response()->json('data not found',);
+            return response()->json('data not found');
         }
         return response()->json([
             'success' => true,
@@ -66,7 +66,7 @@ class StudentController extends Controller
     public function Studentshow($id)
     {
         // $data = Student::find($id);
-        $data = Student::with('vehicle.driver:vehicle_id,mobile')
+        $data = Student::with('vehicle.driver:vehicle_id,name,email,mobile,profile_picture')
         ->latest()->get();
 
         // foreach ($data as $Driver) {
@@ -81,14 +81,13 @@ class StudentController extends Controller
     }
     public function show($id)
     {
-        $data = Student::with('zone','vehicle.driver')->find($id);
+        $data = Student::with('document','zone','vehicle.driver')->find($id);
         return response()->json([
             'success' => true,
             'message' => 'All Data successful',
             'data' => $data,
         ]);
     }
-
     public function notAssign()
     {
         $data = Vehicle::with('driver:id,vehicle_id,name,last_name','company' )
@@ -224,6 +223,7 @@ class StudentController extends Controller
             }
             $obj->save();
             if ($obj->payments_status === 'PAID') {
+                // $earning = Earning::where('student_id', $student->id)->first();
                      Earning::create([
                         'student_id' => $obj->id,
                         'amount' => $obj->amount,
@@ -262,7 +262,6 @@ class StudentController extends Controller
             $driver = Driver::whereHas('vehicle', function ($query) use ($vehicleId) {
                 $query->where('id', $vehicleId);
             })->with('vehicle')->first();
-
             $students = Student::where('payments_status','PAID')->whereHas('vehicle', function ($query) use ($vehicleId) {
                 $query->where('id', $vehicleId);
             })
@@ -312,7 +311,7 @@ class StudentController extends Controller
 
 
 
-    public function checkPayment(Request $req,)
+    public function checkPayment(Request $req)
     {
         $id = $req->student_id;
         $userID = $req->user()->id;
@@ -354,12 +353,12 @@ class StudentController extends Controller
     public function PaymentHistroy()
     {
         $userID = Auth::user()->id;
-        $data = Payment::with('student')->where('parent_id',$userID)->latest()->get();
+        $data = Payment::with('student')->where('parent_id', $userID)->latest()->get();
         // foreach ($data as $Driver) {
         //     $Driver->image = json_decode($Driver->image); // Decode the JSON-encoded location string
         // }
         if (is_null($data)) {
-            return response()->json('data not found',);
+            return response()->json('data not found');
         }
         $data->transform(function ($item) {
             $item->date = date('Y-m-d', strtotime($item->created_at)); // Extract date
@@ -422,6 +421,3 @@ public function ManuallyAdd(Request $req) {
     ], 200);
 }
 }
-
-
-

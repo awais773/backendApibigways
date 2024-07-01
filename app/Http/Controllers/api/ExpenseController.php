@@ -18,7 +18,7 @@ class ExpenseController extends Controller
      */
     public function index()
     {
-        $data = Expense::where('expense_status','APPROVED')->with('vehicle', 'driver')->latest()->get();
+        $data = Expense::with('vehicle', 'driver')->latest()->get();
         return response()->json([
             'success' => true,
             'message' => 'All Data successfully',
@@ -155,10 +155,19 @@ class ExpenseController extends Controller
             ]);
         }
     }
+    public function expenseReport()
+    {
+        $data = Expense::where('expense_status','APPROVED')->with('vehicle', 'driver')->latest()->get();
+        return response()->json([
+            'success' => true,
+            'message' => 'All Data successfully',
+            'data' => $data,
+        ]);
+    }
     public function earningReport()
     {
         $data = User::where('type', 'parents')
-            ->select('id', 'name','total_students','payments_status','proof_image')
+            ->select('id', 'name','total_students','payments_status','proof_image','amount')
             ->get();
         return response()->json([
             'success' => true,

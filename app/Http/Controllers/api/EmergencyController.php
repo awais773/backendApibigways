@@ -16,7 +16,7 @@ class EmergencyController extends Controller
     {
         $data = Emergency::latest()->get();
         if (is_null($data)) {
-            return response()->json('data not found',);
+            return response()->json('data not found');
         }
         return response()->json([
             'success' => true,
