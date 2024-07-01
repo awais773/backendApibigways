@@ -130,7 +130,7 @@
       <td align="center" bgcolor="#e9ecef">
         <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
 
-          <!-- start copy --> 
+          <!-- start copy -->
           <tr>
             <td align="left" bgcolor="#ffffff" style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;">
               <p style="margin: 0;">Dear {{$data->name}}</p>
@@ -139,7 +139,7 @@
           <tr>
             <td align="left" bgcolor="#ffffff" style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;">
               <p style="margin: 0;">
-                "To access all the features, please install our mobile app on your device. Once installed, simply log in using your email and password. Your email for login is <span style='font-family: monospace; background-color: #a4b9ce; padding: 4px; border-radius: 4px;'>{{$data->email}}</span>, and your password is <span style='font-family: monospace; background-color: #a4b9ce; padding: 4px; border-radius: 4px;'>12345678</span>. With the app installed and your credentials handy, you'll have seamless access to all our services and features."              </p>
+                "To access all the features, please install our mobile app on your device. Once installed, simply log in using your email and password. Your email for login is <span style='font-family: monospace; background-color: #a4b9ce; padding: 4px; border-radius: 4px;'>{{$data->email}}</span>, and your password is <span style='font-family: monospace; background-color: #a4b9ce; padding: 4px; border-radius: 4px;'>{{$data->phone_number}}</span>. With the app installed and your credentials handy, you'll have seamless access to all our services and features."              </p>
             </td>
           </tr>
           <!-- end copy -->
