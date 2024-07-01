@@ -42,7 +42,7 @@ Route::post('/updateReguest/{id}',[App\Http\Controllers\api\RegistrationControll
 Route::get('/approved',[App\Http\Controllers\api\RegistrationController::class,'approved']);
 Route::get('/paymentsDetails/{id}',[App\Http\Controllers\api\RegistrationController::class,'paymentsDetails']);
 
-Route::post('/updateStatus/{id}',[App\Http\Controllers\api\RegistrationController::class,'updateStatus']);
+Route::post('/updateStatus/{id}',[App\Http\Controllers\api\RegistrationController::class,'update']);
 
 /////////////////////////////////////////////
 
