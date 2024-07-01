@@ -86,6 +86,9 @@ Route::group( ['middleware' => ['auth:driver-api'] ],function(){
     Route::post('/driver/PasswordChanged ', [App\Http\Controllers\api\DriverController::class, 'PasswordChanged']);
     Route::get('/studentPickupList/{id}', [App\Http\Controllers\api\StudentController::class, 'studentPickList']);
     Route::get('/driverExpenseshow/{id}', [App\Http\Controllers\api\ExpenseController::class, 'driverExpenseshow']);
+    ////Notification show for driver
+    Route::get('/notificationsShowDriver', [App\Http\Controllers\api\NotificationController::class, 'showDriver']);
+    Route::get('/notificationCountDriver', [App\Http\Controllers\api\NotificationController::class, 'NotificationCountDriver']);
 
 });
 
@@ -122,6 +125,7 @@ Route::post('/expenseStore', [App\Http\Controllers\api\ExpenseController::class,
 Route::get('/expenseShow/{id}', [App\Http\Controllers\api\ExpenseController::class, 'show']);
 Route::post('/expenseUpdate/{id}', [App\Http\Controllers\api\ExpenseController::class, 'update']);
 Route::delete('/expenseDelete/{id}', [App\Http\Controllers\api\ExpenseController::class, 'destroy']);
+Route::get('/expensereport', [App\Http\Controllers\api\ExpenseController::class, 'expenseReport']);
 Route::get('/earningreport', [App\Http\Controllers\api\ExpenseController::class, 'earningReport']);
 Route::get('/Paid_earningReport', [App\Http\Controllers\api\ExpenseController::class, 'Paid_earningReport']);
 
@@ -141,7 +145,7 @@ Route::get('/pickupPointsShow/{id}', [App\Http\Controllers\api\PickupPointContro
 Route::post('/pickupPointsUpdate/{id}', [App\Http\Controllers\api\PickupPointController::class, 'update']);
 Route::delete('/pickupPointsDelete/{id}', [App\Http\Controllers\api\PickupPointController::class, 'destroy']);
 
-///pickupPoints
+///Zone
 // Route::resource('zones', App\Http\Controllers\api\ZoneController::class);
 Route::get('/zones', [App\Http\Controllers\api\ZoneController::class, 'index']);
 Route::post('/zonesStore', [App\Http\Controllers\api\ZoneController::class, 'store']);
@@ -162,13 +166,19 @@ Route::get('/emergencyShow/{id}', [App\Http\Controllers\api\EmergencyController:
 Route::post('/emergencyUpdate/{id}', [App\Http\Controllers\api\EmergencyController::class, 'update']);
 Route::delete('/emergencyDelete/{id}', [App\Http\Controllers\api\EmergencyController::class, 'destroy']);
 
+//Documents
+Route::post('/documentStore', [App\Http\Controllers\api\DocumentController::class, 'documentStore']);
+
+//Notification
+Route::post('/notificationsStore', [App\Http\Controllers\api\NotificationController::class, 'store']);
+
 Route::middleware('auth:api')->group( function () {
     // Route::resource('products', ProductController::class);
     Route::post('/update/profile', [App\Http\Controllers\api\AuthenticateController::class, 'updateProfile']);
     Route::post('/PasswordChanged ', [App\Http\Controllers\api\AuthenticateController::class, 'PasswordChanged']);
     Route::Get('/bigwaysData',[App\Http\Controllers\api\RegistrationController::class,'reguestedDataGet']);
     Route::apiResource('student', App\Http\Controllers\api\StudentController::class);
-    Route::post('/studentUpdated/{id}',[App\Http\Controllers\api\StudentController::class,'update']);
+    // Route::post('/studentUpdate/{id}',[App\Http\Controllers\api\StudentController::class,'update']);
     Route::Get('/parentGet',[App\Http\Controllers\api\RegistrationController::class,'parentGet']);
 
     Route::get('/getAlll',[App\Http\Controllers\api\DriverController::class,'index']);
@@ -179,5 +189,8 @@ Route::middleware('auth:api')->group( function () {
     Route::get('/PaymentHistroy',[App\Http\Controllers\api\StudentController::class,'PaymentHistroy']);
     Route::post('/ManuallyAdd',[App\Http\Controllers\api\StudentController::class,'ManuallyAdd']);
 
+    //Notification show for user/parent
+    Route::get('/notificationsShowUser', [App\Http\Controllers\api\NotificationController::class, 'showUser']);
+    Route::get('/notificationCountUser', [App\Http\Controllers\api\NotificationController::class, 'NotificationCountUser']);
 
 });
