@@ -17,6 +17,7 @@ class Zone extends Model
         'mid_longitude' => 'array',
         'pickup_time' => 'array',
         'return_time' => 'array',
+        'id' => 'array',
     ];
 
     public function vehicles()

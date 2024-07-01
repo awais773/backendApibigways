@@ -24,4 +24,8 @@ class Student extends Model
     public function driver() {
         return $this->hasOne(Driver::class, 'vehicle_id');
     }
+     public function document()
+    {
+        return $this->hasOne(Document::class, 'student_id', 'id');
+    }
 }
